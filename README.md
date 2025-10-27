@@ -26,3 +26,11 @@ py -m venv .venv
 
 # Crear archivo de dependencia
 Crear archivo requirements.txt
+
+Flask==3.0.3
+FlaskSQLA1chemy==3.1.1
+Flask-Migrate==4.0.7
+python-dotenv==1.0.1
+
+- Instalar dependencias 
+ pip install -r requirements.txt
