@@ -19,3 +19,10 @@ Frontend: HTML5, Css, Boostrap, javascript (Vanilla)
 
 - Crear entorno virtual
 py -m venv .venv
+
+- Crear el entorno virtual
+
+\.venv\Scripts\Activate.ps1
+
+# Crear archivo de dependencia
+Crear archivo requirements.txt
