@@ -1,2 +1,2 @@
 # Biblioteca-Comunitaria
-Aplicación para una biblioteca comunitaria
+Aplicación para una biblioteca comunitaria...
