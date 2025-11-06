@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Registro de Usuario - {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Crear una cuenta</h2>
+    <p>Únete a nuestra comunidad para empezar a compartir y pedir libros.</p>
+    
+    <form method="POST" action="{{ url_for('auth.register') }}">
+        <!-- Aquí irían los campos del formulario, por ejemplo, con Flask-WTF -->
+        <!-- {{ form.hidden_tag() }} -->
+
+        <div class="form-group">
+            <label for="username">Nombre de Usuario</label>
+            <!-- {{ form.username(class="form-control", id="username") }} -->
+            <input type="text" id="username" name="username" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo Electrónico</label>
+            <!-- {{ form.email(class="form-control", id="email") }} -->
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <!-- {{ form.password(class="form-control", id="password") }} -->
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">Confirmar Contraseña</label>
+            <!-- {{ form.confirm_password(class="form-control", id="confirm_password") }} -->
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+        </div>
+    </form>
+    <div class="form-footer">
+        <p>¿Ya tienes una cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión aquí</a>.</p>
+    </div>
+</div>
+{% endblock %}
