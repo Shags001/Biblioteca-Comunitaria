@@ -1,11 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends "layouts/base.html" %}
+
+{% block title %}
+Registrar Devolución - {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Registrar Devolución de Libro</h2>
+    <p>Busca el préstamo activo para registrar su devolución.</p>
     
-</body>
-</html>
+    <form method="POST" action="">
+        {# Esto es útil si usas Flask-WTF para formularios #}
+        {{ form.hidden_tag() if form }} 
+        
+        <div class="form-group">
+            <label for="search_query">Buscar por Título de Libro o ID de Usuario</label>
+            <input type="text" id="search_query" name="search_query" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Buscar Préstamo</button>
+    </form>
+
+    <div class="results-section mt-4">
+        <!-- Aquí se mostrarán los resultados de la búsqueda de préstamos -->
+        <p>Los préstamos activos que coincidan con la búsqueda aparecerán aquí.</p>
+    </div>
+</div>
+{% endblock %}
