@@ -80,6 +80,16 @@ body {
     outline: none;
 }
 
+.form-control.is-invalid {
+    border-color: #D4AAAA; 
+    background-color: #fef5f5;
+}
+
+.form-control.is-invalid:focus {
+    border-color: #D4AAAA;
+    box-shadow: 0 0 0 0.2rem rgba(212, 170, 170, 0.25);
+}
+
 .form-control::placeholder {
     color: #b0b0b0;
 }
