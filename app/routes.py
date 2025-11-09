@@ -10,5 +10,9 @@ def index():
 
 
 @bp.route('/registro')
-def citas():
+def registro():
     return render_template('modulos/authUsuario/regUsuario/registro.html', title='Registro')
+
+@bp.route('/navbar')
+def navbar():
+    return render_template('layouts/navbar.html', title='navbar')
