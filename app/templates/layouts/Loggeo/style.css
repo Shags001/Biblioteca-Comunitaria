@@ -1,21 +1,25 @@
-.main-content {
-    padding: 0 20px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.content-header {
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #F3F3F3;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
-.pag-title {
-    font-size: 28px;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-.nav-links{
-    gap: 15px;
+.login-container {
+    background-color: #FAFAFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 50px 40px;
+    max-width: 450px;
+    width: 100%;
+    margin: 20px;
 }
