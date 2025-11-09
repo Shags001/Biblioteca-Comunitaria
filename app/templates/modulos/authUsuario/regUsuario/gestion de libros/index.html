@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Libros - Biblioteca Comunitaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.263.1/font/lucide.min.css">
+    <style>
+        :root {
+            --white-smoke: #F3F3F3;
+            --celadon: #AAD4AE;
+            --cambridge-blue: #98C39C;
+            --ghost-white: #FAFAFF;
+            --gunmetal: #2E3440;
+            --cadet-gray: #7A9EAD;
+            --powder-blue: #9BBAC7;
+            --white: #FFFFFF;
+            --accent-ghost: #F8F8FD;
+            --success-green: #9FD6B2;
+            --warning-ecru: #E5C07B;
+            --error-rose: #D4AAAA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--white-smoke);
+            color: var(--gunmetal);
+            padding: 50px;
+        }
+
+        .container-form {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--gunmetal);
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gunmetal);
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--gunmetal);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            font-family: 'Merriweather', serif;
+            font-size: 16px;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--celadon);
+            box-shadow: 0 0 0 0.2rem rgba(170, 212, 174, 0.25);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--celadon);
+            color: var(--gunmetal);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--cambridge-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary-custom:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary-custom {
+            background-color: var(--cadet-gray);
+            color: var(--white);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-secondary-custom:hover {
+            background-color: var(--powder-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary-custom:active {
+            transform: translateY(0);
+        }
+
+        .btn-group-form {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: flex-end;
+        }
+
+        .alert-custom {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            font-weight: 500;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background-color: var(--success-green);
+            color: var(--gunmetal);
+        }
+
+        .alert-error {
+            background-color: var(--error-rose);
+            color: var(--gunmetal);
+        }
+
+        .alert-warning {
+            background-color: var(--warning-ecru);
+            color: var(--gunmetal);
+        }
+
+        .required {
+            color: var(--error-rose);
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 20px;
+            }
+
+            .container-form {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .btn-group-form {
+                flex-direction: column;
+            }
+
+            .btn-primary-custom, .btn-secondary-custom {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-form">
+        <h1>Gestión de Libros</h1>
+
+        <div id="alertMessage" class="alert-custom"></div>
+
+        <form id="bookForm">
+            <h2>Agregar Nuevo Libro</h2>
+
+            <div class="mb-3">
+                <label for="bookTitle" class="form-label">Título del Libro <span class="required">*</span></label>
+                <input type="text" class="form-control" id="bookTitle" placeholder="Ingresa el título del libro" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="bookAuthor" class="form-label">Autor <span class="required">*</span></label>
+                <input type="text" class="form-control" id="bookAuthor" placeholder="Nombre del autor" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="bookISBN" class="form-label">ISBN</label>
+                <input type="text" class="form-control" id="bookISBN" placeholder="Código ISBN">
+            </div>
+
+            <div class="mb-3">
+                <label for="bookGenre" class="form-label">Género <span class="required">*</span></label>
+                <select class="form-select" id="bookGenre" required>
+                    <option value="" selected disabled>Selecciona un género</option>
+                    <option value="fantasia">Fantasía</option>
+                    <option value="ciencia-ficcion">Ciencia Ficción</option>
+                    <option value="romance">Romance</option>
+                    <option value="historia">Historia</option>
+                    <option value="educativo">Educativo</option>
+                    <option value="misterio">Misterio/Suspenso</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="bookPublisher" class="form-label">Editorial</label>
+                <input type="text" class="form-control" id="bookPublisher" placeholder="Nombre de la editorial">
+            </div>
+
+            <div class="mb-3">
+                <label for="bookYear" class="form-label">Año de Publicación</label>
+                <input type="number" class="form-control" id="bookYear" placeholder="Año" min="1800" max="2025">
+            </div>
+
+            <div class="mb-3">
+                <label for="bookPages" class="form-label">Número de Páginas</label>
+                <input type="number" class="form-control" id="bookPages" placeholder="Cantidad de páginas" min="1">
+            </div>
+
+            <div class="mb-3">
+                <label for="bookCopies" class="form-label">Cantidad de Ejemplares <span class="required">*</span></label>
+                <input type="number" class="form-control" id="bookCopies" placeholder="Ejemplares disponibles" min="1" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="bookDescription" class="form-label">Descripción</label>
+                <textarea class="form-control" id="bookDescription" placeholder="Breve descripción del libro"></textarea>
+            </div>
+
+            <div class="btn-group-form">
+                <button type="button" class="btn-secondary-custom" onclick="resetForm()">Cancelar</button>
+                <button type="submit" class="btn-primary-custom">Agregar Libro</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const form = document.getElementById('bookForm');
+        const alertMessage = document.getElementById('alertMessage');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validar campos requeridos
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const genre = document.getElementById('bookGenre').value;
+            const copies = document.getElementById('bookCopies').value;
+
+            if (!title || !author || !genre || !copies) {
+                showAlert('Te faltó llenar algunos campos', 'error');
+                return;
+            }
+
+            // Simular guardado exitoso
+            showAlert('¡Listo! Libro agregado', 'success');
+            
+            // Resetear formulario después de 2 segundos
+            setTimeout(() => {
+                form.reset();
+                hideAlert();
+            }, 2000);
+        });
+
+        function showAlert(message, type) {
+            alertMessage.textContent = message;
+            alertMessage.className = 'alert-custom alert-' + type;
+            alertMessage.style.display = 'block';
+
+            // Auto-ocultar después de 4 segundos
+            setTimeout(hideAlert, 4000);
+        }
+
+        function hideAlert() {
+            alertMessage.style.display = 'none';
+        }
+
+        function resetForm() {
+            if (confirm('¿Seguro que quieres cancelar? Se perderán los cambios.')) {
+                form.reset();
+                hideAlert();
+            }
+        }
+    </script>
+</body>
+</html>
