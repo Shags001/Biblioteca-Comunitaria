@@ -30,6 +30,69 @@
             <button class="btn-primary-custom" onclick="openAddUserModal()">
                 + Agregar Usuario
             </button>
+    </div>
+
+    <div class="table-container">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td>001</td>
+                        <td>Juan Pérez</td>
+                        <td>juan@correo.com</td>
+                        <td>Administrador</td>
+                        <td><span class="badge-active">Activo</span></td>
+                        <td>
+                            <button class="btn-icon btn-edit" onclick="editUser(1)" title="Editar">
+                                ✏️
+                            </button>
+                            <button class="btn-icon btn-deactivate" onclick="toggleUserStatus(1)" title="Desactivar">
+                                🔒
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>002</td>
+                        <td>María García</td>
+                        <td>maria@correo.com</td>
+                        <td>Bibliotecario</td>
+                        <td><span class="badge-active">Activo</span></td>
+                        <td>
+                            <button class="btn-icon btn-edit" onclick="editUser(2)" title="Editar">
+                                ✏️
+                            </button>
+                            <button class="btn-icon btn-deactivate" onclick="toggleUserStatus(2)" title="Desactivar">
+                                🔒
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>003</td>
+                        <td>Carlos López</td>
+                        <td>carlos@correo.com</td>
+                        <td>Usuario</td>
+                        <td><span class="badge-inactive">Inactivo</span></td>
+                        <td>
+                            <button class="btn-icon btn-edit" onclick="editUser(3)" title="Editar">
+                                ✏️
+                            </button>
+                            <button class="btn-icon btn-activate" onclick="toggleUserStatus(3)" title="Activar">
+                                🔓
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+    </div>
 </body>
 </html>
