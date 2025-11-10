@@ -13,6 +13,77 @@
 <body>
 <div class="container my-5">
  <h2 class="mb-5 text-center">Módulo de Gestión de Devoluciones 👋</h2>
+  
+ <div class="row">
+            
+            <div class="col-lg-5 mb-4">
+                <div class="bg-white p-4 shadow-sm rounded border">
+                    <h4 class="mb-4">Registro Rápido de Devolución</h4>
+                    <form id="formDevolucion">
+
+                        <div class="mb-4">
+                            <label for="idPrestamo" class="form-label">ID Préstamo (Ej: 456) *</label>
+                            <input type="text" class="form-control" id="idPrestamo" required placeholder="Ingresa el ID del Préstamo o escanea">
+                            <div class="form-text">Usado para obtener los datos del préstamo.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="fechaDevolucion" class="form-label">Fecha de Devolución *</label>
+                            <input type="date" class="form-control" id="fechaDevolucion" required>
+                            <div class="form-text">Registra la fecha real del retorno.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="estadoDevolucion" class="form-label">Estado del Libro *</label>
+                            <select class="form-select" id="estadoDevolucion" required>
+                                <option value="" disabled selected>Selecciona una opción...</option>
+                                <option value="devuelto_tiempo">Devuelto a tiempo (¡Gracias!)</option>
+                                <option value="devuelto_retraso">Devuelto con retraso</option>
+                                <option value="danado">Dañado (Necesita revisión)</option>
+                            </select>
+                            <div class="form-text">¿El libro se devuelve a tiempo o hubo algún problema?</div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" form="formDevolucion" class="btn btn-principal">
+                                Guardar Devolución
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <h4 class="mb-4">Devoluciones Recientes 📝</h4>
+                <div id="listaDevoluciones" class="bg-white p-4 shadow-sm rounded border">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
+                        <div>
+                            <p class="merriweather-text mb-0 fw-bold">El Diseño de la Comunidad</p>
+                            <p class="text-muted mb-0 small">ID Préstamo: 456 | **Estado: Devuelto a tiempo**</p>
+                        </div>
+                        <span class="badge bg-success-light text-success">10/11/2025</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
+                        <div>
+                            <p class="merriweather-text mb-0 fw-bold">Historia de El Salvador</p>
+                            <p class="text-muted mb-0 small">ID Préstamo: 123 | **Estado: Dañado**</p>
+                        </div>
+                        <span class="badge bg-warning-light text-warning">08/11/2025</span>
+                    </div>
+
+                    <p class="text-muted mt-4 text-center small">...aquí continuaría la tabla de todas las devoluciones...</p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
+
+<script src="static/js/bootstrap.bundle.min.js"></script>
+<script src="Script.js"></script>
 </body>
 </html>
