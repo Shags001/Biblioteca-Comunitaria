@@ -4,208 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Libros - Biblioteca Comunitaria</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Merriweather:wght@400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.263.1/font/lucide.min.css">
-    <style>
-        :root {
-            --white-smoke: #F3F3F3;
-            --celadon: #AAD4AE;
-            --cambridge-blue: #98C39C;
-            --ghost-white: #FAFAFF;
-            --gunmetal: #2E3440;
-            --cadet-gray: #7A9EAD;
-            --powder-blue: #9BBAC7;
-            --white: #FFFFFF;
-            --accent-ghost: #F8F8FD;
-            --success-green: #9FD6B2;
-            --warning-ecru: #E5C07B;
-            --error-rose: #D4AAAA;
-        }
+    
+    <!-- Bootstrap CSS Local -->
+    <link href="../../static/css/bootstrap.min.css" rel="stylesheet">
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--white-smoke);
-            color: var(--gunmetal);
-            padding: 50px;
-        }
-
-        .container-form {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: var(--white);
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 36px;
-            font-weight: 600;
-            color: var(--gunmetal);
-            margin-bottom: 30px;
-            text-align: left;
-        }
-
-        h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--gunmetal);
-            margin-bottom: 25px;
-        }
-
-        .form-label {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--gunmetal);
-            margin-bottom: 8px;
-        }
-
-        .form-control, .form-select {
-            font-family: 'Merriweather', serif;
-            font-size: 16px;
-            padding: 12px 15px;
-            border: 2px solid #E0E0E0;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--celadon);
-            box-shadow: 0 0 0 0.2rem rgba(170, 212, 174, 0.25);
-            outline: none;
-        }
-
-        textarea.form-control {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .btn-primary-custom {
-            background-color: var(--celadon);
-            color: var(--gunmetal);
-            font-size: 15px;
-            font-weight: 500;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .btn-primary-custom:hover {
-            background-color: var(--cambridge-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-primary-custom:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary-custom {
-            background-color: var(--cadet-gray);
-            color: var(--white);
-            font-size: 15px;
-            font-weight: 500;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .btn-secondary-custom:hover {
-            background-color: var(--powder-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-secondary-custom:active {
-            transform: translateY(0);
-        }
-
-        .btn-group-form {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            justify-content: flex-end;
-        }
-
-        .alert-custom {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 15px;
-            font-weight: 500;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-success {
-            background-color: var(--success-green);
-            color: var(--gunmetal);
-        }
-
-        .alert-error {
-            background-color: var(--error-rose);
-            color: var(--gunmetal);
-        }
-
-        .alert-warning {
-            background-color: var(--warning-ecru);
-            color: var(--gunmetal);
-        }
-
-        .required {
-            color: var(--error-rose);
-        }
-
-        @media (max-width: 576px) {
-            body {
-                padding: 20px;
-            }
-
-            .container-form {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 28px;
-            }
-
-            h2 {
-                font-size: 20px;
-            }
-
-            .btn-group-form {
-                flex-direction: column;
-            }
-
-            .btn-primary-custom, .btn-secondary-custom {
-                width: 100%;
-            }
-        }
-    </style>
+    <link href="style.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container-form">
@@ -276,7 +82,10 @@
         </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS Local -->
+    <script src="../../static/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
     <script>
         const form = document.getElementById('bookForm');
         const alertMessage = document.getElementById('alertMessage');
