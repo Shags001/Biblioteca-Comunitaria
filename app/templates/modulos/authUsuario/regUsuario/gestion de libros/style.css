@@ -211,5 +211,8 @@ textarea.form-control {
         flex-direction: column;
     }
 
-   
+    .btn-primary-custom, 
+    .btn-secondary-custom {
+        width: 100%;
+    }
 }
