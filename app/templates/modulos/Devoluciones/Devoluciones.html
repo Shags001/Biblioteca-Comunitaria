@@ -1,89 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Gestión de Devoluciones - Biblioteca Comunitaria</title>
-
- <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
- <link href="static/css/bootstrap.min.css" rel="stylesheet">
- <link href="Style.css" rel="stylesheet"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Devoluciones - Biblioteca Comunitaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="Style.css" rel="stylesheet">
 </head>
 
 <body>
-<div class="container my-5">
- <h2 class="mb-5 text-center">Módulo de Gestión de Devoluciones 👋</h2>
-  
- <div class="row">
-            
-            <div class="col-lg-5 mb-4">
-                <div class="bg-white p-4 shadow-sm rounded border">
-                    <h4 class="mb-4">Registro Rápido de Devolución</h4>
+    <div class="container-fluid px-5 py-5">
+        <h1 class="titulo-principal mb-5">Gestión de Devoluciones 📚</h1>
+        
+        <div class="row g-4">
+            <!-- Columna izquierda: Formulario -->
+            <div class="col-lg-5">
+                <div class="card-personalizado">
+                    <h2 class="subtitulo mb-4">Registrar Nueva Devolución</h2>
                     <form id="formDevolucion">
+                        
+                        <div class="mb-3">
+                            <label for="idPrestamo" class="form-label texto-cuerpo">ID Préstamo *</label>
+                            <input type="text" class="form-control input-personalizado" id="idPrestamo" required placeholder="Ej: 456">
+                            <div class="form-text texto-pequeno">Ingresa el ID del préstamo para cargar los datos automáticamente.</div>
+                        </div>
 
-                        <div class="mb-4">
-                            <label for="idPrestamo" class="form-label">ID Préstamo (Ej: 456) *</label>
-                            <input type="text" class="form-control" id="idPrestamo" required placeholder="Ingresa el ID del Préstamo o escanea">
-                            <div class="form-text">Usado para obtener los datos del préstamo.</div>
+                        <div class="mb-3">
+                            <label for="idLibro" class="form-label texto-cuerpo">ID Libro</label>
+                            <input type="text" class="form-control input-personalizado" id="idLibro" readonly placeholder="Se cargará automáticamente">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tituloLibro" class="form-label texto-cuerpo">Título del Libro</label>
+                            <input type="text" class="form-control input-personalizado" id="tituloLibro" readonly placeholder="Se cargará automáticamente">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaSalida" class="form-label texto-cuerpo">Fecha de Salida</label>
+                                <input type="date" class="form-control input-personalizado" id="fechaSalida" readonly>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaDevolucionEsperada" class="form-label texto-cuerpo">Devolución Esperada</label>
+                                <input type="date" class="form-control input-personalizado" id="fechaDevolucionEsperada" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fechaDevolucionReal" class="form-label texto-cuerpo">Fecha de Devolución *</label>
+                            <input type="date" class="form-control input-personalizado" id="fechaDevolucionReal" required>
+                            <div class="form-text texto-pequeno">Registra la fecha real en que se devolvió el libro.</div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="fechaDevolucion" class="form-label">Fecha de Devolución *</label>
-                            <input type="date" class="form-control" id="fechaDevolucion" required>
-                            <div class="form-text">Registra la fecha real del retorno.</div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="estadoDevolucion" class="form-label">Estado del Libro *</label>
-                            <select class="form-select" id="estadoDevolucion" required>
+                            <label for="estadoDevolucion" class="form-label texto-cuerpo">Estado de la Devolución *</label>
+                            <select class="form-select input-personalizado" id="estadoDevolucion" required>
                                 <option value="" disabled selected>Selecciona una opción...</option>
-                                <option value="devuelto_tiempo">Devuelto a tiempo (¡Gracias!)</option>
+                                <option value="devuelto_tiempo">Devuelto a tiempo</option>
                                 <option value="devuelto_retraso">Devuelto con retraso</option>
-                                <option value="danado">Dañado (Necesita revisión)</option>
+                                <option value="danado">Dañado</option>
                             </select>
-                            <div class="form-text">¿El libro se devuelve a tiempo o hubo algún problema?</div>
+                            <div class="form-text texto-pequeno">¿El libro se devolvió en buenas condiciones?</div>
                         </div>
 
-                        <div class="d-grid mt-4">
-                            <button type="submit" form="formDevolucion" class="btn btn-principal">
-                                Guardar Devolución
-                            </button>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-principal">Guardar Devolución</button>
                         </div>
                     </form>
                 </div>
             </div>
 
+            <!-- Columna derecha: Lista de devoluciones -->
             <div class="col-lg-7">
-                <h4 class="mb-4">Devoluciones Recientes 📝</h4>
-                <div id="listaDevoluciones" class="bg-white p-4 shadow-sm rounded border">
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
-                        <div>
-                            <p class="merriweather-text mb-0 fw-bold">El Diseño de la Comunidad</p>
-                            <p class="text-muted mb-0 small">ID Préstamo: 456 | **Estado: Devuelto a tiempo**</p>
-                        </div>
-                        <span class="badge bg-success-light text-success">10/11/2025</span>
+                <div class="card-personalizado">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="subtitulo mb-0">Devoluciones Recientes</h2>
+                        <span class="texto-pequeno texto-muted">Total: 15 devoluciones</span>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
-                        <div>
-                            <p class="merriweather-text mb-0 fw-bold">Historia de El Salvador</p>
-                            <p class="text-muted mb-0 small">ID Préstamo: 123 | **Estado: Dañado**</p>
+                    <div id="listaDevoluciones">
+                        
+                        <!-- Registro 1 -->
+                        <div class="registro-devolucion">
+                            <div class="registro-header">
+                                <div class="registro-info">
+                                    <h3 class="registro-titulo">El Diseño de la Comunidad</h3>
+                                    <p class="registro-detalles">
+                                        <span class="detalle-item">ID Libro: L-101</span>
+                                        <span class="detalle-separador">•</span>
+                                        <span class="detalle-item">ID Préstamo: 456</span>
+                                    </p>
+                                </div>
+                                <span class="badge badge-devuelto">Devuelto</span>
+                            </div>
+                            <div class="registro-body">
+                                <div class="registro-fechas">
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Salida:</span>
+                                        <span class="fecha-valor">25/10/2025</span>
+                                    </div>
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Esperada:</span>
+                                        <span class="fecha-valor">08/11/2025</span>
+                                    </div>
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Devuelto:</span>
+                                        <span class="fecha-valor">10/11/2025</span>
+                                    </div>
+                                </div>
+                                <span class="etiqueta etiqueta-tiempo">A tiempo</span>
+                            </div>
                         </div>
-                        <span class="badge bg-warning-light text-warning">08/11/2025</span>
+
+                        <!-- Registro 2 -->
+                        <div class="registro-devolucion">
+                            <div class="registro-header">
+                                <div class="registro-info">
+                                    <h3 class="registro-titulo">Historia de El Salvador</h3>
+                                    <p class="registro-detalles">
+                                        <span class="detalle-item">ID Libro: L-089</span>
+                                        <span class="detalle-separador">•</span>
+                                        <span class="detalle-item">ID Préstamo: 423</span>
+                                    </p>
+                                </div>
+                                <span class="badge badge-devuelto">Devuelto</span>
+                            </div>
+                            <div class="registro-body">
+                                <div class="registro-fechas">
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Salida:</span>
+                                        <span class="fecha-valor">15/10/2025</span>
+                                    </div>
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Esperada:</span>
+                                        <span class="fecha-valor">29/10/2025</span>
+                                    </div>
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Devuelto:</span>
+                                        <span class="fecha-valor">08/11/2025</span>
+                                    </div>
+                                </div>
+                                <span class="etiqueta etiqueta-danado">Dañado</span>
+                            </div>
+                        </div>
+
+                        <!-- Registro 3 -->
+                        <div class="registro-devolucion">
+                            <div class="registro-header">
+                                <div class="registro-info">
+                                    <h3 class="registro-titulo">Cien Años de Soledad</h3>
+                                    <p class="registro-detalles">
+                                        <span class="detalle-item">ID Libro: L-045</span>
+                                        <span class="detalle-separador">•</span>
+                                        <span class="detalle-item">ID Préstamo: 398</span>
+                                    </p>
+                                </div>
+                                <span class="badge badge-devuelto">Devuelto</span>
+                            </div>
+                            <div class="registro-body">
+                                <div class="registro-fechas">
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Salida:</span>
+                                        <span class="fecha-valor">10/10/2025</span>
+                                    </div>
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Esperada:</span>
+                                        <span class="fecha-valor">24/10/2025</span>
+                                    </div>
+                                    <div class="fecha-item">
+                                        <span class="fecha-label">Devuelto:</span>
+                                        <span class="fecha-valor">30/10/2025</span>
+                                    </div>
+                                </div>
+                                <span class="etiqueta etiqueta-retraso">Con retraso</span>
+                            </div>
+                        </div>
+
+                        <!-- Mensaje informativo -->
+                        <div class="mensaje-info mt-4">
+                            <p class="texto-pequeno mb-0">Las devoluciones se ordenan de más reciente a más antigua. Usa el sistema de búsqueda para encontrar registros específicos.</p>
+                        </div>
+
                     </div>
-
-                    <p class="text-muted mt-4 text-center small">...aquí continuaría la tabla de todas las devoluciones...</p>
-
                 </div>
             </div>
         </div>
-
     </div>
 
-</div>
-
-<script src="static/js/bootstrap.bundle.min.js"></script>
-<script src="Script.js"></script>
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="Script.js"></script>
 </body>
 </html>
