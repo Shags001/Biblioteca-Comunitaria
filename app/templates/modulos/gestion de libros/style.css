@@ -23,7 +23,7 @@
 
 /* Body */
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--white-smoke);
     color: var(--gunmetal);
     padding: 50px;
@@ -67,7 +67,7 @@ h2 {
 /* Inputs y selects */
 .form-control, 
 .form-select {
-    font-family: 'Merriweather', serif;
+    font-family: 'Merriweather', Georgia, serif;
     font-size: 16px;
     padding: 12px 15px;
     border: 2px solid #E0E0E0;
@@ -100,7 +100,7 @@ textarea.form-control {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .btn-primary-custom:hover {
@@ -124,7 +124,7 @@ textarea.form-control {
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .btn-secondary-custom:hover {
