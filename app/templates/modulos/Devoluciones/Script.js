@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Escuchar el evento de envío del formulario
     formDevolucion.addEventListener('submit', function(e) {
-        e.preventDefault(); // Evita que el formulario se envíe de forma tradicional
+        e.preventDefault(); // Evita quge el formulario se envíe de forma tradicional
 
        
         const idLibro = document.getElementById('idLibro').value;

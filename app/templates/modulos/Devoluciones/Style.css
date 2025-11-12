@@ -25,34 +25,78 @@
     --en-prestamo: #F2C57C;
     --devuelto: #83B8D7;
     --vencido: #D4AAAA;
-    
-    /* Espaciado */
-    --spacing-xs: 8px;
-    --spacing-sm: 15px;
-    --spacing-md: 25px;
-    --spacing-lg: 35px;
-    --spacing-xl: 50px;
-    --spacing-section: 75px;
-    
-    /* Bordes */
-    --border-radius: 8px;
-    --border-radius-sm: 4px;
 }
 
 /* ==========================================
-   ESTILOS GENERALES
+   RESET Y ESTILOS GENERALES
    ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--white-smoke);
     color: var(--gunmetal);
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.container-fluid {
-    max-width: 1400px;
+.container-custom {
+    max-width: 900px;
     margin: 0 auto;
+    padding: 0 30px;
+    flex: 1;
+}
+
+/* ==========================================
+   NAVBAR
+   ========================================== */
+.navbar-personalizado {
+    background-color: var(--celadon);
+    padding: 12px 0;
+    margin-bottom: 50px;
+}
+
+.navbar-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-link {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gunmetal);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link-item {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--gunmetal);
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.nav-link-item:hover,
+.nav-link-item.active {
+    opacity: 0.7;
 }
 
 /* ==========================================
@@ -60,335 +104,400 @@ body {
    ========================================== */
 .titulo-principal {
     font-family: 'Poppins', sans-serif;
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 600;
     color: var(--gunmetal);
-    margin-bottom: var(--spacing-section);
     text-align: center;
+    margin-bottom: 40px;
 }
 
-.subtitulo {
+.subtitulo-seccion {
     font-family: 'Poppins', sans-serif;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 600;
     color: var(--gunmetal);
-}
-
-.texto-cuerpo {
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    color: var(--gunmetal);
-}
-
-.texto-pequeno {
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #6c757d;
-}
-
-.texto-muted {
-    color: #6c757d;
+    margin-bottom: 25px;
 }
 
 /* ==========================================
-   TARJETAS PERSONALIZADAS
+   SECCIONES Y TARJETAS
    ========================================== */
-.card-personalizado {
+.seccion-card {
     background-color: var(--white);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-lg);
-    box-shadow: 0 2px 8px rgba(46, 52, 64, 0.08);
-    border: 1px solid rgba(46, 52, 64, 0.1);
-    transition: box-shadow 0.3s ease;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.card-personalizado:hover {
-    box-shadow: 0 4px 12px rgba(46, 52, 64, 0.12);
+.seccion-filtros {
+    background-color: #F5F5F5;
 }
 
 /* ==========================================
-   FORMULARIOS
+   FORMULARIOS HORIZONTALES
    ========================================== */
-.form-label {
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: var(--gunmetal);
+.form-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
 }
 
-.input-personalizado {
-    border: 2px solid #e0e0e0;
-    border-radius: var(--border-radius-sm);
-    padding: 12px 16px;
+.form-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-row-doble {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group-mitad {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-label-inline {
     font-family: 'Poppins', sans-serif;
-    font-size: 15px;
-    transition: all 0.3s ease;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--gunmetal);
+    text-align: left;
+    margin: 0;
 }
 
-.input-personalizado:focus {
+.form-control-inline {
+    width: 100%;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    background-color: var(--white);
+    transition: border-color 0.3s ease;
+}
+
+.form-control-inline:focus {
     border-color: var(--celadon);
-    box-shadow: 0 0 0 0.2rem rgba(170, 212, 174, 0.25);
     outline: none;
+    box-shadow: 0 0 0 2px rgba(170, 212, 174, 0.15);
 }
 
-.input-personalizado:read-only {
-    background-color: #f8f9fa;
+.form-control-inline:read-only {
+    background-color: #F9FAFB;
+    color: #9CA3AF;
     cursor: not-allowed;
 }
 
-.form-text {
-    font-size: 13px;
-    color: #6c757d;
-    margin-top: 4px;
+.form-control-inline::placeholder {
+    color: #9CA3AF;
+}
+
+/* Input con icono */
+.input-con-icono {
+    position: relative;
+    width: 100%;
+}
+
+.input-con-icono .form-control-inline {
+    padding-right: 35px;
+}
+
+.icono-buscar {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    pointer-events: none;
 }
 
 /* ==========================================
    BOTONES
    ========================================== */
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 15px;
+}
+
 .btn-principal {
     font-family: 'Poppins', sans-serif;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 500;
     background-color: var(--celadon);
     color: var(--gunmetal);
     border: none;
-    padding: 12px 40px;
-    border-radius: var(--border-radius-sm);
-    transition: all 0.3s ease;
+    padding: 10px 25px;
+    border-radius: 4px;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .btn-principal:hover {
     background-color: var(--cambridge-blue);
-    color: var(--gunmetal);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(170, 212, 174, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(170, 212, 174, 0.3);
 }
 
-.btn-principal:active {
-    transform: translateY(0);
-}
-
-/* ==========================================
-   REGISTROS DE DEVOLUCIONES
-   ========================================== */
-#listaDevoluciones {
-    max-height: 700px;
-    overflow-y: auto;
-    padding-right: 10px;
-}
-
-#listaDevoluciones::-webkit-scrollbar {
-    width: 8px;
-}
-
-#listaDevoluciones::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-#listaDevoluciones::-webkit-scrollbar-thumb {
-    background: var(--cadet-gray);
-    border-radius: 10px;
-}
-
-#listaDevoluciones::-webkit-scrollbar-thumb:hover {
-    background: var(--gunmetal);
-}
-
-.registro-devolucion {
-    background-color: var(--ghost-white-light);
-    border: 1px solid rgba(46, 52, 64, 0.1);
-    border-radius: var(--border-radius);
-    padding: 20px;
-    margin-bottom: 16px;
+.btn-secundario {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: var(--cadet-gray);
+    color: var(--white);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 4px;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.registro-devolucion:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(46, 52, 64, 0.1);
-}
-
-.registro-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(46, 52, 64, 0.1);
-}
-
-.registro-info {
-    flex: 1;
-}
-
-.registro-titulo {
-    font-family: 'Merriweather', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gunmetal);
-    margin-bottom: 6px;
-}
-
-.registro-detalles {
-    font-size: 13px;
-    color: #6c757d;
-    margin-bottom: 0;
-}
-
-.detalle-item {
-    display: inline-block;
-}
-
-.detalle-separador {
-    margin: 0 8px;
-    color: #dee2e6;
-}
-
-.registro-body {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.registro-fechas {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.fecha-item {
-    display: flex;
-    flex-direction: column;
-}
-
-.fecha-label {
-    font-size: 12px;
-    color: #6c757d;
-    font-weight: 500;
-}
-
-.fecha-valor {
-    font-size: 14px;
-    color: var(--gunmetal);
-    font-weight: 600;
+.btn-secundario:hover {
+    background-color: var(--powder-blue);
+    transform: translateY(-1px);
 }
 
 /* ==========================================
-   BADGES Y ETIQUETAS
+   FILTROS
    ========================================== */
-.badge {
+.filtros-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-item .form-label-inline {
+    text-align: left;
+}
+
+/* ==========================================
+   HISTORIAL DE DEVOLUCIONES
+   ========================================== */
+.registro-historial {
+    background-color: #FAFAFA;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.registro-historial:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.registro-historial:last-child {
+    margin-bottom: 0;
+}
+
+.registro-header-historial {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.registro-titulo-historial {
+    font-family: 'Merriweather', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gunmetal);
+    margin: 0;
+}
+
+.registro-info-text {
     font-family: 'Poppins', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
+    color: #6B7280;
+    margin: 0 0 12px 0;
+}
+
+.registro-footer-historial {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.etiquetas-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.etiqueta-info {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
     font-weight: 500;
-    padding: 6px 14px;
-    border-radius: 20px;
+    background-color: #E5E7EB;
+    color: #4B5563;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+.badge-estado {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     white-space: nowrap;
 }
 
 .badge-devuelto {
-    background-color: rgba(131, 184, 215, 0.2);
-    color: #2d5a73;
+    background-color: rgba(131, 184, 215, 0.25);
+    color: #2D5A73;
 }
 
-.etiqueta {
+.badge-tiempo {
     font-family: 'Poppins', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 4px 12px;
-    border-radius: 12px;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
 }
 
-.etiqueta-tiempo {
-    background-color: rgba(170, 212, 174, 0.3);
-    color: #4a7c4f;
+.badge-verde {
+    background-color: rgba(170, 212, 174, 0.35);
+    color: #4A7C4F;
 }
 
-.etiqueta-retraso {
-    background-color: rgba(242, 197, 124, 0.3);
-    color: #8b6d3a;
+.badge-amarillo {
+    background-color: rgba(242, 197, 124, 0.35);
+    color: #8B6D3A;
 }
 
-.etiqueta-danado {
-    background-color: rgba(212, 170, 170, 0.3);
-    color: #8b5a5a;
+.badge-rojo {
+    background-color: rgba(212, 170, 170, 0.35);
+    color: #8B5A5A;
 }
 
 /* ==========================================
-   MENSAJES INFORMATIVOS
+   FOOTER
    ========================================== */
-.mensaje-info {
-    background-color: var(--white);
-    border-left: 4px solid var(--celadon-light);
-    padding: 15px 20px;
-    border-radius: var(--border-radius-sm);
-    margin-top: 20px;
+.footer-personalizado {
+    background-color: var(--celadon);
+    padding: 18px 0;
+    margin-top: 50px;
+}
+
+.footer-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--gunmetal);
+    text-align: center;
+    margin: 0;
 }
 
 /* ==========================================
    RESPONSIVE DESIGN
    ========================================== */
-@media (max-width: 991px) {
-    .titulo-principal {
-        font-size: 28px;
+@media (max-width: 768px) {
+    .container-custom,
+    .navbar-content {
+        padding: 0 20px;
     }
-    
-    .subtitulo {
-        font-size: 20px;
-    }
-    
-    .card-personalizado {
-        padding: 25px;
-    }
-    
-    .registro-fechas {
-        gap: 12px;
-    }
-}
 
-@media (max-width: 576px) {
     .titulo-principal {
         font-size: 24px;
         margin-bottom: 30px;
     }
-    
-    .subtitulo {
-        font-size: 18px;
+
+    .subtitulo-seccion {
+        font-size: 16px;
     }
-    
-    .card-personalizado {
+
+    .seccion-card {
         padding: 20px;
     }
-    
-    .registro-devolucion {
-        padding: 15px;
+
+    .form-row,
+    .form-group-mitad {
+        grid-template-columns: 1fr;
+        gap: 8px;
     }
-    
-    .registro-header {
+
+    .form-row-doble {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .form-label-inline {
+        font-size: 12px;
+    }
+
+    .filtros-container {
+        grid-template-columns: 1fr;
+    }
+
+    .form-buttons {
         flex-direction: column;
-        gap: 10px;
     }
-    
-    .registro-body {
+
+    .btn-principal,
+    .btn-secundario {
+        width: 100%;
+    }
+
+    .registro-footer-historial {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
     }
-    
-    .registro-fechas {
-        width: 100%;
+
+    .nav-links {
+        gap: 15px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-content {
         flex-direction: column;
-        gap: 8px;
+        gap: 12px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .registro-historial {
+        padding: 15px;
+    }
+
+    .etiquetas-container {
+        flex-wrap: wrap;
     }
 }
 
 /* ==========================================
-   ANIMACIONES Y TRANSICIONES
+   ANIMACIONES
    ========================================== */
 @keyframes fadeIn {
     from {
@@ -401,6 +510,18 @@ body {
     }
 }
 
-.registro-devolucion {
+.registro-historial {
     animation: fadeIn 0.3s ease;
+}
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+select.form-control-inline {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
 }

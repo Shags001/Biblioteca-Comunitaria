@@ -10,184 +10,166 @@
 </head>
 
 <body>
-    <div class="container-fluid px-5 py-5">
-        <h1 class="titulo-principal mb-5">Gestión de Devoluciones 📚</h1>
+    <!-- Navbar -->
+    <nav class="navbar-personalizado">
+        <div class="container-custom">
+            <div class="navbar-content">
+                <a href="#" class="logo-link">🏛️ Scripteria</a>
+                <div class="nav-links">
+                    <a href="#" class="nav-link-item">Libros</a>
+                    <a href="#" class="nav-link-item">Inventarios</a>
+                    <a href="#" class="nav-link-item active">Devoluciones</a>
+                    <a href="#" class="nav-link-item">Historia</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-custom">
+        <h1 class="titulo-principal">Gestión de Devoluciones</h1>
         
-        <div class="row g-4">
-            <!-- Columna izquierda: Formulario -->
-            <div class="col-lg-5">
-                <div class="card-personalizado">
-                    <h2 class="subtitulo mb-4">Registrar Nueva Devolución</h2>
-                    <form id="formDevolucion">
-                        
-                        <div class="mb-3">
-                            <label for="idPrestamo" class="form-label texto-cuerpo">ID Préstamo *</label>
-                            <input type="text" class="form-control input-personalizado" id="idPrestamo" required placeholder="Ej: 456">
-                            <div class="form-text texto-pequeno">Ingresa el ID del préstamo para cargar los datos automáticamente.</div>
-                        </div>
+        <!-- Registro de Devolución -->
+        <div class="seccion-card">
+            <h2 class="subtitulo-seccion">Registrar Devolución</h2>
+            <form id="formDevolucion" class="form-horizontal">
+                <div class="form-row">
+                    <label for="idPrestamo" class="form-label-inline">ID Préstamo</label>
+                    <input type="text" class="form-control-inline" id="idPrestamo" placeholder="Ingrese valor" required>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="idLibro" class="form-label texto-cuerpo">ID Libro</label>
-                            <input type="text" class="form-control input-personalizado" id="idLibro" readonly placeholder="Se cargará automáticamente">
-                        </div>
+                <div class="form-row">
+                    <label for="isbn" class="form-label-inline">ISBN</label>
+                    <input type="text" class="form-control-inline" id="isbn" placeholder="Ingrese valor" readonly>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="tituloLibro" class="form-label texto-cuerpo">Título del Libro</label>
-                            <input type="text" class="form-control input-personalizado" id="tituloLibro" readonly placeholder="Se cargará automáticamente">
-                        </div>
+                <div class="form-row">
+                    <label for="tituloLibro" class="form-label-inline">Título del libro</label>
+                    <input type="text" class="form-control-inline" id="tituloLibro" placeholder="Ingrese valor" readonly>
+                </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="fechaSalida" class="form-label texto-cuerpo">Fecha de Salida</label>
-                                <input type="date" class="form-control input-personalizado" id="fechaSalida" readonly>
-                            </div>
+                <div class="form-row-doble">
+                    <div class="form-group-mitad">
+                        <label for="fechaPrestamo" class="form-label-inline">Fecha de préstamo</label>
+                        <input type="date" class="form-control-inline" id="fechaPrestamo" readonly>
+                    </div>
 
-                            <div class="col-md-6 mb-3">
-                                <label for="fechaDevolucionEsperada" class="form-label texto-cuerpo">Devolución Esperada</label>
-                                <input type="date" class="form-control input-personalizado" id="fechaDevolucionEsperada" readonly>
-                            </div>
-                        </div>
+                    <div class="form-group-mitad">
+                        <label for="fechaDevolucionEsperada" class="form-label-inline">Fecha de devolución</label>
+                        <input type="date" class="form-control-inline" id="fechaDevolucionEsperada" readonly>
+                    </div>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="fechaDevolucionReal" class="form-label texto-cuerpo">Fecha de Devolución *</label>
-                            <input type="date" class="form-control input-personalizado" id="fechaDevolucionReal" required>
-                            <div class="form-text texto-pequeno">Registra la fecha real en que se devolvió el libro.</div>
-                        </div>
+                <div class="form-row">
+                    <label for="estado" class="form-label-inline">Estado</label>
+                    <select class="form-control-inline" id="estado" required>
+                        <option value="" disabled selected>Seleccione</option>
+                        <option value="devuelto_tiempo">Devuelto a tiempo</option>
+                        <option value="devuelto_retraso">Devuelto con retraso</option>
+                        <option value="danado">Dañado</option>
+                    </select>
+                </div>
 
-                        <div class="mb-4">
-                            <label for="estadoDevolucion" class="form-label texto-cuerpo">Estado de la Devolución *</label>
-                            <select class="form-select input-personalizado" id="estadoDevolucion" required>
-                                <option value="" disabled selected>Selecciona una opción...</option>
-                                <option value="devuelto_tiempo">Devuelto a tiempo</option>
-                                <option value="devuelto_retraso">Devuelto con retraso</option>
-                                <option value="danado">Dañado</option>
-                            </select>
-                            <div class="form-text texto-pequeno">¿El libro se devolvió en buenas condiciones?</div>
-                        </div>
+                <div class="form-row">
+                    <label for="fechaDevolucionReal" class="form-label-inline">Fecha de Devolución</label>
+                    <input type="date" class="form-control-inline" id="fechaDevolucionReal" required>
+                </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-principal">Guardar Devolución</button>
-                        </div>
-                    </form>
+                <div class="form-buttons">
+                    <button type="button" class="btn-secundario">Limpiar</button>
+                    <button type="submit" class="btn-principal">Registrar Devolución</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filtros de Búsqueda -->
+        <div class="seccion-card seccion-filtros">
+            <h2 class="subtitulo-seccion">Filtros de Búsqueda</h2>
+            <div class="filtros-container">
+                <div class="filtro-item">
+                    <label for="filtroFecha" class="form-label-inline">Fecha de Devolución</label>
+                    <div class="input-con-icono">
+                        <input type="date" class="form-control-inline" id="filtroFecha">
+                        <span class="icono-buscar">🔍</span>
+                    </div>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="filtroISBN" class="form-label-inline">ISBN</label>
+                    <input type="text" class="form-control-inline" id="filtroISBN" placeholder="Ingrese valor">
+                </div>
+
+                <div class="filtro-item">
+                    <label for="filtroCliente" class="form-label-inline">Cliente del Préstamo</label>
+                    <select class="form-control-inline" id="filtroCliente">
+                        <option value="" selected>Seleccione</option>
+                        <option value="cliente1">Cliente 1</option>
+                        <option value="cliente2">Cliente 2</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Devoluciones -->
+        <div class="seccion-card">
+            <h2 class="subtitulo-seccion">Historial de Devoluciones</h2>
+            
+            <!-- Registro 1 -->
+            <div class="registro-historial">
+                <div class="registro-header-historial">
+                    <h3 class="registro-titulo-historial">El Diseño de la Comunidad</h3>
+                    <span class="badge-estado badge-devuelto">DEVUELTO</span>
+                </div>
+                <p class="registro-info-text">ID: 30/10/2025 13:15 Horas</p>
+                <div class="registro-footer-historial">
+                    <div class="etiquetas-container">
+                        <span class="etiqueta-info">DEVUELTO</span>
+                        <span class="etiqueta-info">10/11/2025</span>
+                        <span class="etiqueta-info">DAÑADO</span>
+                    </div>
+                    <span class="badge-tiempo badge-verde">A TIEMPO</span>
                 </div>
             </div>
 
-            <!-- Columna derecha: Lista de devoluciones -->
-            <div class="col-lg-7">
-                <div class="card-personalizado">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="subtitulo mb-0">Devoluciones Recientes</h2>
-                        <span class="texto-pequeno texto-muted">Total: 15 devoluciones</span>
+            <!-- Registro 2 -->
+            <div class="registro-historial">
+                <div class="registro-header-historial">
+                    <h3 class="registro-titulo-historial">Historia de El Salvador</h3>
+                    <span class="badge-estado badge-devuelto">DEVUELTO</span>
+                </div>
+                <p class="registro-info-text">ID: 30/10/2025 13:15 Horas</p>
+                <div class="registro-footer-historial">
+                    <div class="etiquetas-container">
+                        <span class="etiqueta-info">DEVUELTO</span>
+                        <span class="etiqueta-info">10/11/2025</span>
+                        <span class="etiqueta-info">DAÑADO</span>
                     </div>
+                    <span class="badge-tiempo badge-rojo">DAÑADO</span>
+                </div>
+            </div>
 
-                    <div id="listaDevoluciones">
-                        
-                        <!-- Registro 1 -->
-                        <div class="registro-devolucion">
-                            <div class="registro-header">
-                                <div class="registro-info">
-                                    <h3 class="registro-titulo">El Diseño de la Comunidad</h3>
-                                    <p class="registro-detalles">
-                                        <span class="detalle-item">ID Libro: L-101</span>
-                                        <span class="detalle-separador">•</span>
-                                        <span class="detalle-item">ID Préstamo: 456</span>
-                                    </p>
-                                </div>
-                                <span class="badge badge-devuelto">Devuelto</span>
-                            </div>
-                            <div class="registro-body">
-                                <div class="registro-fechas">
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Salida:</span>
-                                        <span class="fecha-valor">25/10/2025</span>
-                                    </div>
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Esperada:</span>
-                                        <span class="fecha-valor">08/11/2025</span>
-                                    </div>
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Devuelto:</span>
-                                        <span class="fecha-valor">10/11/2025</span>
-                                    </div>
-                                </div>
-                                <span class="etiqueta etiqueta-tiempo">A tiempo</span>
-                            </div>
-                        </div>
-
-                        <!-- Registro 2 -->
-                        <div class="registro-devolucion">
-                            <div class="registro-header">
-                                <div class="registro-info">
-                                    <h3 class="registro-titulo">Historia de El Salvador</h3>
-                                    <p class="registro-detalles">
-                                        <span class="detalle-item">ID Libro: L-089</span>
-                                        <span class="detalle-separador">•</span>
-                                        <span class="detalle-item">ID Préstamo: 423</span>
-                                    </p>
-                                </div>
-                                <span class="badge badge-devuelto">Devuelto</span>
-                            </div>
-                            <div class="registro-body">
-                                <div class="registro-fechas">
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Salida:</span>
-                                        <span class="fecha-valor">15/10/2025</span>
-                                    </div>
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Esperada:</span>
-                                        <span class="fecha-valor">29/10/2025</span>
-                                    </div>
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Devuelto:</span>
-                                        <span class="fecha-valor">08/11/2025</span>
-                                    </div>
-                                </div>
-                                <span class="etiqueta etiqueta-danado">Dañado</span>
-                            </div>
-                        </div>
-
-                        <!-- Registro 3 -->
-                        <div class="registro-devolucion">
-                            <div class="registro-header">
-                                <div class="registro-info">
-                                    <h3 class="registro-titulo">Cien Años de Soledad</h3>
-                                    <p class="registro-detalles">
-                                        <span class="detalle-item">ID Libro: L-045</span>
-                                        <span class="detalle-separador">•</span>
-                                        <span class="detalle-item">ID Préstamo: 398</span>
-                                    </p>
-                                </div>
-                                <span class="badge badge-devuelto">Devuelto</span>
-                            </div>
-                            <div class="registro-body">
-                                <div class="registro-fechas">
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Salida:</span>
-                                        <span class="fecha-valor">10/10/2025</span>
-                                    </div>
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Esperada:</span>
-                                        <span class="fecha-valor">24/10/2025</span>
-                                    </div>
-                                    <div class="fecha-item">
-                                        <span class="fecha-label">Devuelto:</span>
-                                        <span class="fecha-valor">30/10/2025</span>
-                                    </div>
-                                </div>
-                                <span class="etiqueta etiqueta-retraso">Con retraso</span>
-                            </div>
-                        </div>
-
-                        <!-- Mensaje informativo -->
-                        <div class="mensaje-info mt-4">
-                            <p class="texto-pequeno mb-0">Las devoluciones se ordenan de más reciente a más antigua. Usa el sistema de búsqueda para encontrar registros específicos.</p>
-                        </div>
-
+            <!-- Registro 3 -->
+            <div class="registro-historial">
+                <div class="registro-header-historial">
+                    <h3 class="registro-titulo-historial">Cien Años de Soledad</h3>
+                    <span class="badge-estado badge-devuelto">DEVUELTO</span>
+                </div>
+                <p class="registro-info-text">ID: 30/10/2025 13:15 Horas</p>
+                <div class="registro-footer-historial">
+                    <div class="etiquetas-container">
+                        <span class="etiqueta-info">DEVUELTO</span>
+                        <span class="etiqueta-info">10/11/2025</span>
+                        <span class="etiqueta-info">RETRASADO</span>
                     </div>
+                    <span class="badge-tiempo badge-amarillo">RETRASADO</span>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="footer-personalizado">
+        <p class="footer-text">Copyright 2024 © Todos los derechos reservados</p>
+    </footer>
 
     <script src="static/js/bootstrap.bundle.min.js"></script>
     <script src="Script.js"></script>
