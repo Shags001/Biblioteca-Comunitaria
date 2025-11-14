@@ -1,1 +1,36 @@
-<!--Plantilla del archivo base.html-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Administrativa</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='../static/css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='../static/css/index.css') }}"> 
+</head>
+<body>
+
+    {% include 'layouts/navbar.html' %} 
+
+    <main class="container-fluid section-start section-end">
+        <div style="height: 500px; border: 1px dashed gray; padding: 20px;">
+            CONTENIDO DE LA PÁGINA DE ÍNDICE
+        </div>
+    </main>
+    
+    {% include 'layouts/footer.html' %}
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+</body>
+</html>
