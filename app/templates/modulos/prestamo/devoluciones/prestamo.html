@@ -1,11 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prestamo</title>
+    <title>Gestión de Préstamos</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="prestamo.css">
 </head>
 <body>
-    
+
+    <div class="container py-4">
+        <h2 class="text-center mb-4 fw-bold">Gestión de Préstamos</h2>
+
+<!-- ==================== -->
+<!-- FORMULARIO -->
+<!-- ==================== -->
+<div class="contenedor-formulario-row mx-auto mb-5">
+    <div class="form-card">
+        <div class="card shadow-sm formulario-centrado">
+            <div class="card-header">
+                <h4 class="mb-0 fw-semibold">Registrar / Editar Préstamo</h4>
+            </div>
+            <div class="card-body">
+                <form id="prestamoForm" class="modern-form">
+                    <div class="row g-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="solicitante" class="form-label">Solicitante</label>
+                                <input type="text" class="form-control modern-input" id="solicitante" placeholder="Nombre del solicitante" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="tipoPrestamo" class="form-label">Tipo de préstamo</label>
+                                <select class="form-select modern-input" id="tipoPrestamo" required>
+                                    <option selected disabled>Seleccione tipo</option>
+                                    <option>Libro</option>
+                                    <option>Recurso digital</option>
+                                    <option>Equipo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="elementoPrestado" class="form-label">Elemento prestado</label>
+                                <input type="text" class="form-control modern-input" id="elementoPrestado" placeholder="Ejemplo: El Principito" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="fechaPrestamo" class="form-label">Fecha de préstamo</label>
+                                <input type="date" class="form-control modern-input" id="fechaPrestamo" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="fechaDevolucion" class="form-label">Fecha de devolución</label>
+                                <input type="date" class="form-control modern-input" id="fechaDevolucion" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="estadoPrestamo" class="form-label">Estado</label>
+                                <select class="form-select modern-input" id="estadoPrestamo">
+                                    <option>Activo</option>
+                                    <option>Devuelto</option>
+                                    <option>Vencido</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="reset" class="btn btn-secondary me-2">Limpiar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Préstamo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR EXPLICATIVO-->
+    <div class="explicacion-wrapper">
+        <div class="card shadow-sm explicacion-card">
+            <div class="card-header">
+                <h5 class="mb-0 fw-semibold">Descripción de campos</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>Solicitante:</strong> Persona que solicita el préstamo.</li>
+                    <li><strong>Tipo de préstamo:</strong> Tipo de recurso (libro, documento, equipo).</li>
+                    <li><strong>Elemento prestado:</strong> Libro específico prestado.</li>
+                    <li><strong>Fecha Préstamo:</strong> Día en que se realiza el préstamo.</li>
+                    <li><strong>Fecha Devolución:</strong> Fecha límite de devolución.</li>
+                    <li><strong>Estado:</strong> Activo, devuelto o vencido.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ==================== -->
+<!-- FILTROS (REEMPLAZAR ESTA SECCIÓN) -->
+<!-- ==================== -->
+<div class="card mb-4 shadow-sm filtros-card">
+  <div class="card-body">
+    <h5 class="fw-semibold mb-3 text-center">Filtros de búsqueda</h5>
+
+    <div class="filtros-grid">
+      <div class="filtro-item">
+        <label for="filtroFecha" class="form-label">Fecha</label>
+        <input type="date" class="form-control" id="filtroFecha">
+      </div>
+
+      <div class="filtro-item">
+        <label for="filtroTipo" class="form-label">Tipo</label>
+        <select class="form-select" id="filtroTipo">
+          <option selected disabled>Todos</option>
+          <option>Libro</option>
+          <option>Recurso digital</option>
+          <option>Equipo</option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label for="filtroEstado" class="form-label">Estado</label>
+        <select class="form-select" id="filtroEstado">
+          <option selected disabled>Todos</option>
+          <option>Activo</option>
+          <option>Devuelto</option>
+          <option>Vencido</option>
+        </select>
+      </div>
+
+      <div class="filtro-item">
+        <label for="filtroResponsable" class="form-label">Responsable</label>
+        <input type="text" class="form-control" id="filtroResponsable" placeholder="Nombre del solicitante">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== -->
+<!-- TABLA -->
+<!-- ==================== -->
+<div class="card shadow-sm">
+    <div class="card-header text-white">
+        <h4 class="mb-0 fw-semibold">Listado de Préstamos</h4>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle table-hover mb-0">
+            <thead class="text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Solicitante</th>
+                    <th>Elemento</th>
+                    <th>Tipo</th>
+                    <th>Fecha Préstamo</th>
+                    <th>Fecha Devolución</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
 </body>
 </html>
