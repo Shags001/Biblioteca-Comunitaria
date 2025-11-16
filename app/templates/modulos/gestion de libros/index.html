@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Libros - Biblioteca Comunitaria</title>
     
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Bootstrap CSS Local -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-
-        <!-- Bootstrap JS Local -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}">
     
     <!-- Lucide Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-static@0.263.1/font/lucide.min.css">
@@ -40,37 +40,38 @@
 
         /* Body */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--white-smoke);
             color: var(--gunmetal);
-            padding: 50px;
+            padding: 50px 20px;
         }
 
         /* Contenedor del formulario */
         .container-form {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
             background-color: var(--white);
-            padding: 35px;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        /* Títulos principales */
+        /* Título principal */
         h1 {
             font-size: 36px;
             font-weight: 600;
             color: var(--gunmetal);
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             text-align: left;
         }
 
-        /* Subtítulos */
+        /* Subtítulo */
         h2 {
             font-size: 24px;
             font-weight: 600;
             color: var(--gunmetal);
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            text-align: left;
         }
 
         /* Labels de formulario */
@@ -79,17 +80,20 @@
             font-weight: 500;
             color: var(--gunmetal);
             margin-bottom: 8px;
+            display: block;
         }
 
         /* Inputs y selects */
         .form-control, 
         .form-select {
-            font-family: Georgia, serif;
+            font-family: Georgia, 'Times New Roman', serif;
             font-size: 16px;
-            padding: 12px 15px;
-            border: 2px solid #E0E0E0;
-            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #D0D0D0;
+            border-radius: 6px;
             transition: all 0.3s ease;
+            background-color: var(--white);
+            width: 100%;
         }
 
         /* Focus en inputs */
@@ -102,27 +106,32 @@
 
         /* Textarea */
         textarea.form-control {
-            min-height: 120px;
+            min-height: 100px;
             resize: vertical;
+        }
+
+        /* Espaciado entre campos */
+        .form-group {
+            margin-bottom: 20px;
         }
 
         /* Botón principal */
         .btn-primary-custom {
-            background-color: var(--celadon);
+            background-color: #AAD4AE;
             color: var(--gunmetal);
             font-size: 15px;
             font-weight: 500;
-            padding: 12px 30px;
+            padding: 10px 30px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .btn-primary-custom:hover {
-            background-color: var(--cambridge-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            background-color: #98C39C;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
         }
 
         .btn-primary-custom:active {
@@ -131,21 +140,21 @@
 
         /* Botón secundario */
         .btn-secondary-custom {
-            background-color: var(--cadet-gray);
+            background-color: #7A9EAD;
             color: var(--white);
             font-size: 15px;
             font-weight: 500;
-            padding: 12px 30px;
+            padding: 10px 30px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .btn-secondary-custom:hover {
-            background-color: var(--powder-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            background-color: #9BBAC7;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
         }
 
         .btn-secondary-custom:active {
@@ -155,7 +164,7 @@
         /* Grupo de botones */
         .btn-group-form {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-top: 30px;
             justify-content: flex-end;
         }
@@ -207,11 +216,11 @@
         /* Responsive - Móvil */
         @media (max-width: 576px) {
             body {
-                padding: 20px;
+                padding: 20px 10px;
             }
 
             .container-form {
-                padding: 20px;
+                padding: 25px 20px;
             }
 
             h1 {
@@ -242,22 +251,22 @@
         <form id="bookForm">
             <h2>Agregar Nuevo Libro</h2>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookTitle" class="form-label">Título del Libro <span class="required">*</span></label>
                 <input type="text" class="form-control" id="bookTitle" placeholder="Ingresa el título del libro" required>
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookAuthor" class="form-label">Autor <span class="required">*</span></label>
                 <input type="text" class="form-control" id="bookAuthor" placeholder="Nombre del autor" required>
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookISBN" class="form-label">ISBN</label>
                 <input type="text" class="form-control" id="bookISBN" placeholder="Código ISBN">
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookGenre" class="form-label">Género <span class="required">*</span></label>
                 <select class="form-select" id="bookGenre" required>
                     <option value="" selected disabled>Selecciona un género</option>
@@ -270,27 +279,27 @@
                 </select>
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookPublisher" class="form-label">Editorial</label>
                 <input type="text" class="form-control" id="bookPublisher" placeholder="Nombre de la editorial">
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookYear" class="form-label">Año de Publicación</label>
                 <input type="number" class="form-control" id="bookYear" placeholder="Año" min="1800" max="2025">
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookPages" class="form-label">Número de Páginas</label>
                 <input type="number" class="form-control" id="bookPages" placeholder="Cantidad de páginas" min="1">
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookCopies" class="form-label">Cantidad de Ejemplares <span class="required">*</span></label>
                 <input type="number" class="form-control" id="bookCopies" placeholder="Ejemplares disponibles" min="1" required>
             </div>
 
-            <div class="mb-3">
+            <div class="form-group">
                 <label for="bookDescription" class="form-label">Descripción</label>
                 <textarea class="form-control" id="bookDescription" placeholder="Breve descripción del libro"></textarea>
             </div>
@@ -302,6 +311,9 @@
         </form>
     </div>
 
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <!-- Bootstrap JS Local -->
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     
