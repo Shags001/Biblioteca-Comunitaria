@@ -9,7 +9,10 @@ def index():
     return render_template('layouts/index.html', title='Inicio')
 
 
-@bp.route('/registro')
-def registro():
-    return render_template('modulos/authUsuario/regUsuario/registro.html', title='Registro')
+@bp.route('/logging')
+def login():
+    return render_template('modulos/authUsuario/InLoggeo/Loggeo.html', title='Loggin')
 
+@bp.route('/rol')
+def roles():
+    return render_template('modulos/authUsuario/InLoggeo/rols/usuarios.html', title='Gestion de Usuarios')
