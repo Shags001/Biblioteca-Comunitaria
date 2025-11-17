@@ -1,125 +1,351 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Gestion libro{% endblock %}
+{% block title %}Gestión de Libros{% endblock %}
 
 {% block content %}
-<main class="container mt-4">
-    <div class="container-form">
-        <h1>Gestión de Libros</h1>
-
-        <div id="alertMessage" class="alert-custom"></div>
-
-        <form id="bookForm">
-            <h2>Agregar Nuevo Libro</h2>
-
-            <div class="form-group">
-                <label for="bookTitle" class="form-label">Título del Libro <span class="required">*</span></label>
-                <input type="text" class="form-control" id="bookTitle" placeholder="Ingresa el título del libro" required>
+<main class="container mt-4 rol-container">
+    <div class="main-content">
+        <div class="content-header">
+            <h1 class="page-title">Gestión de Libros</h1>
+            <button class="btn-primary-custom d-flex align-items-center" id="btnAgregarLibro">
+                <i data-lucide="plus" class="me-2"></i>Agregar Libro
+            </button>
+        </div>
+        <div class="search-bar mb-3 d-flex align-items-center">
+            <span class="input-group-text"><i data-lucide="search"></i></span>
+            <input type="text" class="form-control" id="searchInput" placeholder="Buscar por título, autor, género, editorial...">
+        </div>
+        <div class="table-container">
+            <div class="table-responsive-custom">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th><i data-lucide="hash" class="me-1"></i>ID</th>
+                            <th><i data-lucide="book-open" class="me-1"></i>Título</th>
+                            <th><i data-lucide="user" class="me-1"></i>Autor</th>
+                            <th><i data-lucide="barcode" class="me-1"></i>ISBN</th>
+                            <th><i data-lucide="tag" class="me-1"></i>Género</th>
+                            <th><i data-lucide="factory" class="me-1"></i>Editorial</th>
+                            <th><i data-lucide="calendar" class="me-1"></i>Año</th>
+                            <th><i data-lucide="file-text" class="me-1"></i>Páginas</th>
+                            <th><i data-lucide="layers" class="me-1"></i>Ejemplares</th>
+                            <th><i data-lucide="align-left" class="me-1"></i>Descripción</th>
+                            <th><i data-lucide="edit-3" class="me-1"></i>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booksTableBody">
+                        <!-- Los libros se cargarán dinámicamente aquí -->
+                    </tbody>
+                </table>
             </div>
-
-            <div class="form-group">
-                <label for="bookAuthor" class="form-label">Autor <span class="required">*</span></label>
-                <input type="text" class="form-control" id="bookAuthor" placeholder="Nombre del autor" required>
-            </div>
-
-            <div class="form-group">
-                <label for="bookISBN" class="form-label">ISBN</label>
-                <input type="text" class="form-control" id="bookISBN" placeholder="Código ISBN">
-            </div>
-
-            <div class="form-group">
-                <label for="bookGenre" class="form-label">Género <span class="required">*</span></label>
-                <select class="form-select" id="bookGenre" required>
-                    <option value="" selected disabled>Selecciona un género</option>
-                    <option value="fantasia">Fantasía</option>
-                    <option value="ciencia-ficcion">Ciencia Ficción</option>
-                    <option value="romance">Romance</option>
-                    <option value="historia">Historia</option>
-                    <option value="educativo">Educativo</option>
-                    <option value="misterio">Misterio/Suspenso</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="bookPublisher" class="form-label">Editorial</label>
-                <input type="text" class="form-control" id="bookPublisher" placeholder="Nombre de la editorial">
-            </div>
-
-            <div class="form-group">
-                <label for="bookYear" class="form-label">Año de Publicación</label>
-                <input type="number" class="form-control" id="bookYear" placeholder="Año" min="1800" max="2025">
-            </div>
-
-            <div class="form-group">
-                <label for="bookPages" class="form-label">Número de Páginas</label>
-                <input type="number" class="form-control" id="bookPages" placeholder="Cantidad de páginas" min="1">
-            </div>
-
-            <div class="form-group">
-                <label for="bookCopies" class="form-label">Cantidad de Ejemplares <span class="required">*</span></label>
-                <input type="number" class="form-control" id="bookCopies" placeholder="Ejemplares disponibles" min="1" required>
-            </div>
-
-            <div class="form-group">
-                <label for="bookDescription" class="form-label">Descripción</label>
-                <textarea class="form-control" id="bookDescription" placeholder="Breve descripción del libro"></textarea>
-            </div>
-
-            <div class="btn-group-form">
-                <button type="button" class="btn-secondary-custom" onclick="resetForm()">Cancelar</button>
-                <button type="submit" class="btn-primary-custom">Agregar Libro</button>
-            </div>
-        </form>
+        </div>
     </div>
-    
-    <!-- Custom JavaScript -->
+
+    <!-- Modal para Agregar/Editar Libro -->
+    <div class="modal-overlay d-none" id="bookModal">
+        <div class="modal-custom">
+            <div class="modal-header-custom d-flex flex-row justify-content-between align-items-center">
+                <h2 class="modal-title" id="modalTitle">Agregar Libro</h2>
+                <button class="btn-close-modal" id="btnCerrarModal">✕</button>
+            </div>
+            <div class="modal-body-custom">
+                <form id="bookForm">
+                    <input type="hidden" id="bookId">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="bookTitle" class="form-label"><i data-lucide="book-open" class="me-2"></i>Título</label>
+                            <input type="text" class="form-control" id="bookTitle" placeholder="Título del libro" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookAuthor" class="form-label"><i data-lucide="user" class="me-2"></i>Autor</label>
+                            <input type="text" class="form-control" id="bookAuthor" placeholder="Autor" required>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookISBN" class="form-label"><i data-lucide="barcode" class="me-2"></i>ISBN</label>
+                            <input type="text" class="form-control" id="bookISBN" placeholder="Código ISBN">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookGenre" class="form-label"><i data-lucide="tag" class="me-2"></i>Género</label>
+                            <select class="form-control" id="bookGenre" required>
+                                <option value="">Selecciona un género</option>
+                                <option value="Fantasía">Fantasía</option>
+                                <option value="Ciencia Ficción">Ciencia Ficción</option>
+                                <option value="Romance">Romance</option>
+                                <option value="Historia">Historia</option>
+                                <option value="Educativo">Educativo</option>
+                                <option value="Misterio">Misterio/Suspenso</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookPublisher" class="form-label"><i data-lucide="factory" class="me-2"></i>Editorial</label>
+                            <input type="text" class="form-control" id="bookPublisher" placeholder="Editorial">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookYear" class="form-label"><i data-lucide="calendar" class="me-2"></i>Año</label>
+                            <input type="number" class="form-control" id="bookYear" placeholder="Año" min="1800" max="2025">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookPages" class="form-label"><i data-lucide="file-text" class="me-2"></i>Número de Páginas</label>
+                            <input type="number" class="form-control" id="bookPages" placeholder="Cantidad de páginas" min="1">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="bookCopies" class="form-label"><i data-lucide="layers" class="me-2"></i>Ejemplares</label>
+                            <input type="number" class="form-control" id="bookCopies" placeholder="Cantidad" min="1" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="bookDescription" class="form-label"><i data-lucide="align-left" class="me-2"></i>Descripción</label>
+                            <textarea class="form-control" id="bookDescription" placeholder="Breve descripción del libro"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer-custom d-flex flex-column flex-md-row justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn-secondary-custom" id="btnCancelar">
+                            <i data-lucide="x" class="me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary-custom" id="btnGuardar">
+                            <i data-lucide="save" class="me-2"></i>Guardar Libro
+                        </button>
+                    </div>
+                </form>
+            </button>
+            </div>
+<style>
+@media (max-width: 768px) {
+    .main-content {
+        padding: 0.5rem !important;
+    }
+    .table-responsive-custom {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .table-custom th, .table-custom td {
+        white-space: nowrap;
+        font-size: 0.95rem;
+        padding: 0.5rem 0.3rem;
+    }
+    .modal-custom {
+        max-width: 100vw !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        padding: 0.5rem !important;
+    }
+    .modal-body-custom .row {
+        flex-direction: column !important;
+    }
+}
+</style>
+        </div>
+    </div>
+
     <script>
-        const form = document.getElementById('bookForm');
-        const alertMessage = document.getElementById('alertMessage');
+        // Base de datos de libros
+        let books = [
+            { id: 1, title: 'Cien Años de Soledad', author: 'Gabriel García Márquez', isbn: '978-0307474728', genre: 'Fantasía', publisher: 'Sudamericana', year: 1967, pages: 417, copies: 5, description: 'Novela emblemática del realismo mágico.' },
+            { id: 2, title: 'El Principito', author: 'Antoine de Saint-Exupéry', isbn: '978-0156013987', genre: 'Fantasía', publisher: 'Reynal & Hitchcock', year: 1943, pages: 96, copies: 3, description: 'Fábula poética sobre la vida y la amistad.' },
+            { id: 3, title: '1984', author: 'George Orwell', isbn: '978-0451524935', genre: 'Ciencia Ficción', publisher: 'Secker & Warburg', year: 1949, pages: 328, copies: 2, description: 'Distopía sobre el control totalitario.' }
+        ];
+        let editingBookId = null;
+        let nextBookId = 4;
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Elementos del DOM
+        const btnAgregarLibro = document.getElementById('btnAgregarLibro');
+        const btnCerrarModal = document.getElementById('btnCerrarModal');
+        const btnCancelar = document.getElementById('btnCancelar');
+        const bookModal = document.getElementById('bookModal');
+        const bookForm = document.getElementById('bookForm');
+        const booksTableBody = document.getElementById('booksTableBody');
+        const searchInput = document.getElementById('searchInput');
 
-            // Validar campos requeridos
-            const title = document.getElementById('bookTitle').value.trim();
-            const author = document.getElementById('bookAuthor').value.trim();
-            const genre = document.getElementById('bookGenre').value;
-            const copies = document.getElementById('bookCopies').value;
+        // Renderizar tabla de libros
+        function renderBooks(filteredBooks = null) {
+            const data = filteredBooks || books;
+            booksTableBody.innerHTML = '';
+            data.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${String(book.id).padStart(3, '0')}</td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.isbn || ''}</td>
+                    <td>${book.genre}</td>
+                    <td>${book.publisher || ''}</td>
+                    <td>${book.year || ''}</td>
+                    <td>${book.pages || ''}</td>
+                    <td>${book.copies}</td>
+                    <td>${book.description || ''}</td>
+                    <td>
+                        <button class="btn-icon btn-edit" data-id="${book.id}" title="Editar"><i data-lucide="edit-3"></i></button>
+                    </td>
+                `;
+                booksTableBody.appendChild(tr);
+            });
 
-            if (!title || !author || !genre || !copies) {
-                showAlert('Te faltó llenar algunos campos', 'error');
+            // Renderizar íconos Lucide después de actualizar la tabla
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+
+            // Agregar eventos a los botones de la tabla
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const bookId = parseInt(this.getAttribute('data-id'));
+                    editBook(bookId);
+                });
+            });
+        }
+
+        // Buscar libros
+        function filterBooks() {
+            const query = searchInput.value.trim().toLowerCase();
+            if (!query) {
+                renderBooks();
                 return;
             }
+            const filtered = books.filter(book => {
+                return (
+                    book.title.toLowerCase().includes(query) ||
+                    book.author.toLowerCase().includes(query) ||
+                    (book.isbn && book.isbn.toLowerCase().includes(query)) ||
+                    book.genre.toLowerCase().includes(query) ||
+                    (book.publisher && book.publisher.toLowerCase().includes(query)) ||
+                    (book.year && String(book.year).includes(query)) ||
+                    (book.pages && String(book.pages).includes(query)) ||
+                    (book.copies && String(book.copies).includes(query)) ||
+                    (book.description && book.description.toLowerCase().includes(query))
+                );
+            });
+            renderBooks(filtered);
+        }
 
-            // Simular guardado exitoso
-            showAlert('¡Listo! Libro agregado', 'success');
-            
-            // Resetear formulario después de 2 segundos
+        searchInput.addEventListener('input', filterBooks);
+
+        // Abrir modal para agregar libro
+        function openAddBookModal() {
+            editingBookId = null;
+            document.getElementById('modalTitle').textContent = 'Agregar Libro';
+            bookForm.reset();
+            document.getElementById('bookId').value = '';
+            bookModal.classList.remove('d-none');
+        }
+
+        // Cerrar modal
+        function closeBookModal() {
+            bookModal.classList.add('d-none');
+            bookForm.reset();
+            editingBookId = null;
+        }
+
+        // Editar libro
+        function editBook(bookId) {
+            const book = books.find(b => b.id === bookId);
+            if (!book) return;
+            editingBookId = bookId;
+            document.getElementById('modalTitle').textContent = 'Editar Libro';
+            document.getElementById('bookId').value = book.id;
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('bookAuthor').value = book.author;
+            document.getElementById('bookISBN').value = book.isbn || '';
+            document.getElementById('bookGenre').value = book.genre;
+            document.getElementById('bookPublisher').value = book.publisher || '';
+            document.getElementById('bookYear').value = book.year || '';
+            document.getElementById('bookPages').value = book.pages || '';
+            document.getElementById('bookCopies').value = book.copies;
+            document.getElementById('bookDescription').value = book.description || '';
+            bookModal.classList.remove('d-none');
+        }
+
+        // Cambiar estado de libro
+
+        // Mostrar notificación
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert-custom alert-${type === 'success' ? 'success' : 'error'}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.minWidth = '300px';
+            notification.innerHTML = `
+                <span style="vertical-align:middle;">
+                    <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-triangle'}" class="me-2"></i>
+                </span>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
             setTimeout(() => {
-                form.reset();
-                hideAlert();
-            }, 2000);
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Event Listeners
+        btnAgregarLibro.addEventListener('click', openAddBookModal);
+        btnCerrarModal.addEventListener('click', closeBookModal);
+        btnCancelar.addEventListener('click', closeBookModal);
+        bookModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBookModal();
+            }
         });
 
-        function showAlert(message, type) {
-            alertMessage.textContent = message;
-            alertMessage.className = 'alert-custom alert-' + type;
-            alertMessage.style.display = 'block';
-
-            // Auto-ocultar después de 4 segundos
-            setTimeout(hideAlert, 4000);
-        }
-
-        function hideAlert() {
-            alertMessage.style.display = 'none';
-        }
-
-        function resetForm() {
-            if (confirm('¿Seguro que quieres cancelar? Se perderán los cambios.')) {
-                form.reset();
-                hideAlert();
+        // Guardar libro
+        bookForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const isbn = document.getElementById('bookISBN').value.trim();
+            const genre = document.getElementById('bookGenre').value;
+            const publisher = document.getElementById('bookPublisher').value.trim();
+            const year = document.getElementById('bookYear').value;
+            const pages = document.getElementById('bookPages').value;
+            const copies = document.getElementById('bookCopies').value;
+            const description = document.getElementById('bookDescription').value.trim();
+            if (!title || !author || !genre || !copies) {
+                showNotification('Por favor completa todos los campos obligatorios', 'error');
+                return;
             }
-        }
+            if (editingBookId) {
+                // Editar libro existente
+                const bookIndex = books.findIndex(b => b.id === editingBookId);
+                if (bookIndex !== -1) {
+                    books[bookIndex].title = title;
+                    books[bookIndex].author = author;
+                    books[bookIndex].isbn = isbn;
+                    books[bookIndex].genre = genre;
+                    books[bookIndex].publisher = publisher;
+                    books[bookIndex].year = year ? parseInt(year) : '';
+                    books[bookIndex].pages = pages ? parseInt(pages) : '';
+                    books[bookIndex].copies = copies ? parseInt(copies) : 1;
+                    books[bookIndex].description = description;
+                    showNotification('Libro actualizado correctamente', 'success');
+                }
+            } else {
+                // Agregar nuevo libro
+                const newBook = {
+                    id: nextBookId++,
+                    title,
+                    author,
+                    isbn,
+                    genre,
+                    publisher,
+                    year: year ? parseInt(year) : '',
+                    pages: pages ? parseInt(pages) : '',
+                    copies: copies ? parseInt(copies) : 1,
+                    description
+                };
+                books.push(newBook);
+                showNotification('Libro agregado correctamente', 'success');
+            }
+            renderBooks();
+            setTimeout(() => closeBookModal(), 500);
+        });
+
+        // Inicializar
+        renderBooks();
     </script>
 </main>
 {% endblock %}

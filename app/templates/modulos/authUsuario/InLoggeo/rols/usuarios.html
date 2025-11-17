@@ -3,12 +3,12 @@
 {% block title %}Gestión de Usuarios{% endblock %}
 
 {% block content %}
-<main class="container mt-4">
+<main class="container mt-4 rol-container">
     <div class="main-content">
         <div class="content-header">
             <h1 class="page-title">Gestión de Usuarios</h1>
             <button class="btn-primary-custom" id="btnAgregarUsuario">
-                + Agregar Usuario
+                <i data-lucide="user-plus" class="me-2"></i>Agregar Usuario
             </button>
         </div>
 
@@ -16,12 +16,12 @@
             <table class="table-custom">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Rol</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th><i data-lucide="hash" class="me-1"></i>ID</th>
+                        <th><i data-lucide="user" class="me-1"></i>Nombre</th>
+                        <th><i data-lucide="mail" class="me-1"></i>Correo</th>
+                        <th><i data-lucide="shield" class="me-1"></i>Rol</th>
+                        <th><i data-lucide="activity" class="me-1"></i>Estado</th>
+                        <th><i data-lucide="settings" class="me-1"></i>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
@@ -36,24 +36,24 @@
         <div class="modal-custom">
             <div class="modal-header-custom">
                 <h2 class="modal-title" id="modalTitle">Agregar Usuario</h2>
-                <button class="btn-close-modal" id="btnCerrarModal">✕</button>
+                <button class="btn-close-modal" id="btnCerrarModal"><i data-lucide="x" style="font-size:1.3em;"></i></button>
             </div>
             <div class="modal-body-custom">
                 <form id="userForm">
                     <input type="hidden" id="userId">
                     
                     <div class="mb-3">
-                        <label for="userName" class="form-label">Nombre completo</label>
+                        <label for="userName" class="form-label"><i data-lucide="user" class="me-2"></i>Nombre completo</label>
                         <input type="text" class="form-control" id="userName" placeholder="Juan Pérez" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="userEmail" class="form-label">Correo electrónico</label>
+                        <label for="userEmail" class="form-label"><i data-lucide="mail" class="me-2"></i>Correo electrónico</label>
                         <input type="email" class="form-control" id="userEmail" placeholder="ejemplo@correo.com" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="userRole" class="form-label">Rol</label>
+                        <label for="userRole" class="form-label"><i data-lucide="shield" class="me-2"></i>Rol</label>
                         <select class="form-control" id="userRole" required>
                             <option value="">Selecciona un rol</option>
                             <option value="Administrador">Administrador</option>
@@ -62,17 +62,17 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="userPassword" class="form-label">Contraseña</label>
+                        <label for="userPassword" class="form-label"><i data-lucide="key" class="me-2"></i>Contraseña</label>
                         <input type="password" class="form-control" id="userPassword" placeholder="••••••••">
                         <small class="text-muted d-none" id="passwordHelp">Dejar vacío para mantener la contraseña actual</small>
                     </div>
 
                     <div class="modal-footer-custom">
                         <button type="button" class="btn-secondary-custom" id="btnCancelar">
-                            Cancelar
+                            <i data-lucide="x" class="me-2"></i>Cancelar
                         </button>
                         <button type="submit" class="btn-primary-custom" id="btnGuardar">
-                            Guardar Usuario
+                            <i data-lucide="save" class="me-2"></i>Guardar Usuario
                         </button>
                     </div>
                 </form>
@@ -100,6 +100,7 @@
         const usersTableBody = document.getElementById('usersTableBody');
 
         // Renderizar tabla de usuarios
+
         function renderUsers() {
             console.log('Renderizando usuarios:', users);
             usersTableBody.innerHTML = '';
@@ -113,23 +114,27 @@
                     <td>${user.role}</td>
                     <td>
                         <span class="badge-${user.active ? 'active' : 'inactive'}">
+                            <i data-lucide="${user.active ? 'check-circle' : 'slash'}" class="me-1 estado-anim"></i>
                             ${user.active ? 'Activo' : 'Inactivo'}
                         </span>
                     </td>
                     <td>
                         <button class="btn-icon btn-edit" data-id="${user.id}" title="Editar">
-                            ✏️
+                            <i data-lucide="edit-3"></i>
                         </button>
                         <button class="btn-icon btn-${user.active ? 'deactivate' : 'activate'}" 
                                 data-id="${user.id}" 
                                 data-action="toggle"
                                 title="${user.active ? 'Desactivar' : 'Activar'}">
-                            ${user.active ? '🔒' : '🔓'}
+                            <i data-lucide="${user.active ? 'lock' : 'unlock'}"></i>
                         </button>
                     </td>
                 `;
                 usersTableBody.appendChild(tr);
             });
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
 
             // Agregar eventos a los botones de la tabla
             document.querySelectorAll('.btn-edit').forEach(btn => {
@@ -196,7 +201,17 @@
             user.active = !user.active;
             console.log('Nuevo estado:', user.active);
             renderUsers();
-            
+            // Animación de transición en el badge
+            setTimeout(() => {
+                const tr = Array.from(usersTableBody.children).find(row => row.children[0].textContent === String(user.id).padStart(3, '0'));
+                if (tr) {
+                    const badge = tr.querySelector('.badge-active, .badge-inactive');
+                    if (badge) {
+                        badge.classList.add('badge-anim');
+                        setTimeout(() => badge.classList.remove('badge-anim'), 500);
+                    }
+                }
+            }, 10);
             const message = user.active ? 'Usuario activado correctamente' : 'Usuario desactivado correctamente';
             showNotification(message, 'success');
         }
@@ -210,10 +225,16 @@
             notification.style.right = '20px';
             notification.style.zIndex = '9999';
             notification.style.minWidth = '300px';
-            notification.textContent = message;
-            
+            notification.innerHTML = `
+                <span style="vertical-align:middle;">
+                    <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-triangle'}" class="me-2"></i>
+                </span>
+                <span>${message}</span>
+            `;
             document.body.appendChild(notification);
-            
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
             setTimeout(() => {
                 notification.style.opacity = '0';
                 notification.style.transition = 'opacity 0.3s ease';
