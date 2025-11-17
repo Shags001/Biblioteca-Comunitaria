@@ -16,3 +16,7 @@ def login():
 @bp.route('/rol')
 def roles():
     return render_template('modulos/authUsuario/InLoggeo/rols/usuarios.html', title='Gestion de Usuarios')
+
+@bp.route('/gestLibro')
+def gestLibro():
+    return render_template('modulos/gestLibro/index.html', title='Gestion de Libros')

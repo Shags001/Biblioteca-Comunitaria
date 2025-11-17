@@ -1,0 +1,125 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Gestion libro{% endblock %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="container-form">
+        <h1>Gestión de Libros</h1>
+
+        <div id="alertMessage" class="alert-custom"></div>
+
+        <form id="bookForm">
+            <h2>Agregar Nuevo Libro</h2>
+
+            <div class="form-group">
+                <label for="bookTitle" class="form-label">Título del Libro <span class="required">*</span></label>
+                <input type="text" class="form-control" id="bookTitle" placeholder="Ingresa el título del libro" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookAuthor" class="form-label">Autor <span class="required">*</span></label>
+                <input type="text" class="form-control" id="bookAuthor" placeholder="Nombre del autor" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookISBN" class="form-label">ISBN</label>
+                <input type="text" class="form-control" id="bookISBN" placeholder="Código ISBN">
+            </div>
+
+            <div class="form-group">
+                <label for="bookGenre" class="form-label">Género <span class="required">*</span></label>
+                <select class="form-select" id="bookGenre" required>
+                    <option value="" selected disabled>Selecciona un género</option>
+                    <option value="fantasia">Fantasía</option>
+                    <option value="ciencia-ficcion">Ciencia Ficción</option>
+                    <option value="romance">Romance</option>
+                    <option value="historia">Historia</option>
+                    <option value="educativo">Educativo</option>
+                    <option value="misterio">Misterio/Suspenso</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="bookPublisher" class="form-label">Editorial</label>
+                <input type="text" class="form-control" id="bookPublisher" placeholder="Nombre de la editorial">
+            </div>
+
+            <div class="form-group">
+                <label for="bookYear" class="form-label">Año de Publicación</label>
+                <input type="number" class="form-control" id="bookYear" placeholder="Año" min="1800" max="2025">
+            </div>
+
+            <div class="form-group">
+                <label for="bookPages" class="form-label">Número de Páginas</label>
+                <input type="number" class="form-control" id="bookPages" placeholder="Cantidad de páginas" min="1">
+            </div>
+
+            <div class="form-group">
+                <label for="bookCopies" class="form-label">Cantidad de Ejemplares <span class="required">*</span></label>
+                <input type="number" class="form-control" id="bookCopies" placeholder="Ejemplares disponibles" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="bookDescription" class="form-label">Descripción</label>
+                <textarea class="form-control" id="bookDescription" placeholder="Breve descripción del libro"></textarea>
+            </div>
+
+            <div class="btn-group-form">
+                <button type="button" class="btn-secondary-custom" onclick="resetForm()">Cancelar</button>
+                <button type="submit" class="btn-primary-custom">Agregar Libro</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        const form = document.getElementById('bookForm');
+        const alertMessage = document.getElementById('alertMessage');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validar campos requeridos
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            const genre = document.getElementById('bookGenre').value;
+            const copies = document.getElementById('bookCopies').value;
+
+            if (!title || !author || !genre || !copies) {
+                showAlert('Te faltó llenar algunos campos', 'error');
+                return;
+            }
+
+            // Simular guardado exitoso
+            showAlert('¡Listo! Libro agregado', 'success');
+            
+            // Resetear formulario después de 2 segundos
+            setTimeout(() => {
+                form.reset();
+                hideAlert();
+            }, 2000);
+        });
+
+        function showAlert(message, type) {
+            alertMessage.textContent = message;
+            alertMessage.className = 'alert-custom alert-' + type;
+            alertMessage.style.display = 'block';
+
+            // Auto-ocultar después de 4 segundos
+            setTimeout(hideAlert, 4000);
+        }
+
+        function hideAlert() {
+            alertMessage.style.display = 'none';
+        }
+
+        function resetForm() {
+            if (confirm('¿Seguro que quieres cancelar? Se perderán los cambios.')) {
+                form.reset();
+                hideAlert();
+            }
+        }
+    </script>
+</main>
+{% endblock %}
