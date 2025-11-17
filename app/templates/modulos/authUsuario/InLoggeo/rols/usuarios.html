@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - Biblioteca Comunitaria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-content">
+        <div class="content-header">
+            <h1 class="page-title">Gestión de Usuarios</h1>
+            <button class="btn-primary-custom" id="btnAgregarUsuario">
+                + Agregar Usuario
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Los usuarios se cargarán dinámicamente aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Usuario -->
+    <div class="modal-overlay d-none" id="userModal">
+        <div class="modal-custom">
+            <div class="modal-header-custom">
+                <h2 class="modal-title" id="modalTitle">Agregar Usuario</h2>
+                <button class="btn-close-modal" id="btnCerrarModal">✕</button>
+            </div>
+            <div class="modal-body-custom">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    
+                    <div class="mb-3">
+                        <label for="userName" class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" id="userName" placeholder="Juan Pérez" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="userEmail" placeholder="ejemplo@correo.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label">Rol</label>
+                        <select class="form-control" id="userRole" required>
+                            <option value="">Selecciona un rol</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Recepcionista">Recepcionista</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="userPassword" placeholder="••••••••">
+                        <small class="text-muted d-none" id="passwordHelp">Dejar vacío para mantener la contraseña actual</small>
+                    </div>
+
+                    <div class="modal-footer-custom">
+                        <button type="button" class="btn-secondary-custom" id="btnCancelar">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary-custom" id="btnGuardar">
+                            Guardar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Base de datos de usuarios
+        let users = [
+            { id: 1, name: 'Juan Pérez', email: 'juan@correo.com', role: 'Administrador', active: true },
+            { id: 2, name: 'María García', email: 'maria@correo.com', role: 'Bibliotecario', active: true },
+            { id: 3, name: 'Carlos López', email: 'carlos@correo.com', role: 'Bibliotecario', active: false }
+        ];
+
+        let editingUserId = null;
+        let nextId = 4;
+
+        // Elementos del DOM
+        const btnAgregarUsuario = document.getElementById('btnAgregarUsuario');
+        const btnCerrarModal = document.getElementById('btnCerrarModal');
+        const btnCancelar = document.getElementById('btnCancelar');
+        const userModal = document.getElementById('userModal');
+        const userForm = document.getElementById('userForm');
+        const usersTableBody = document.getElementById('usersTableBody');
+
+        // Renderizar tabla de usuarios
+        function renderUsers() {
+            console.log('Renderizando usuarios:', users);
+            usersTableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${String(user.id).padStart(3, '0')}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>
+                        <span class="badge-${user.active ? 'active' : 'inactive'}">
+                            ${user.active ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn-icon btn-edit" data-id="${user.id}" title="Editar">
+                            ✏️
+                        </button>
+                        <button class="btn-icon btn-${user.active ? 'deactivate' : 'activate'}" 
+                                data-id="${user.id}" 
+                                data-action="toggle"
+                                title="${user.active ? 'Desactivar' : 'Activar'}">
+                            ${user.active ? '🔒' : '🔓'}
+                        </button>
+                    </td>
+                `;
+                usersTableBody.appendChild(tr);
+            });
+
+            // Agregar eventos a los botones de la tabla
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = parseInt(this.getAttribute('data-id'));
+                    editUser(userId);
+                });
+            });
+
+            document.querySelectorAll('[data-action="toggle"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = parseInt(this.getAttribute('data-id'));
+                    toggleUserStatus(userId);
+                });
+            });
+        }
+
+        // Abrir modal para agregar usuario
+        function openAddUserModal() {
+            editingUserId = null;
+            document.getElementById('modalTitle').textContent = 'Agregar Usuario';
+            userForm.reset();
+            document.getElementById('userId').value = '';
+            document.getElementById('userPassword').required = true;
+            document.getElementById('passwordHelp').classList.add('d-none');
+            userModal.classList.remove('d-none');
+        }
+
+        // Cerrar modal
+        function closeUserModal() {
+            userModal.classList.add('d-none');
+            userForm.reset();
+            editingUserId = null;
+        }
+
+        // Editar usuario
+        function editUser(userId) {
+            console.log('Editando usuario con ID:', userId);
+            const user = users.find(u => u.id === userId);
+            if (!user) {
+                console.error('Usuario no encontrado');
+                return;
+            }
+
+            editingUserId = userId;
+            document.getElementById('modalTitle').textContent = 'Editar Usuario';
+            document.getElementById('userId').value = user.id;
+            document.getElementById('userName').value = user.name;
+            document.getElementById('userEmail').value = user.email;
+            document.getElementById('userRole').value = user.role;
+            document.getElementById('userPassword').value = '';
+            document.getElementById('userPassword').required = false;
+            document.getElementById('passwordHelp').classList.remove('d-none');
+            
+            userModal.classList.remove('d-none');
+        }
+
+        // Cambiar estado de usuario
+        function toggleUserStatus(userId) {
+            console.log('Cambiando estado del usuario:', userId);
+            const user = users.find(u => u.id === userId);
+            if (!user) return;
+
+            user.active = !user.active;
+            console.log('Nuevo estado:', user.active);
+            renderUsers();
+            
+            const message = user.active ? 'Usuario activado correctamente' : 'Usuario desactivado correctamente';
+            showNotification(message, 'success');
+        }
+
+        // Mostrar notificación
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert-custom alert-${type === 'success' ? 'success' : 'error'}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.minWidth = '300px';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Event Listeners
+        btnAgregarUsuario.addEventListener('click', openAddUserModal);
+        btnCerrarModal.addEventListener('click', closeUserModal);
+        btnCancelar.addEventListener('click', closeUserModal);
+
+        // Cerrar modal al hacer clic fuera
+        userModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUserModal();
+            }
+        });
+
+        // Guardar usuario
+        userForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Formulario enviado');
+
+            const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
+            const role = document.getElementById('userRole').value;
+            const password = document.getElementById('userPassword').value;
+
+            console.log('Datos del formulario:', { name, email, role, password });
+
+            if (!name || !email || !role) {
+                showNotification('Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            if (editingUserId) {
+                // Editar usuario existente
+                console.log('Editando usuario ID:', editingUserId);
+                const userIndex = users.findIndex(u => u.id === editingUserId);
+                if (userIndex !== -1) {
+                    users[userIndex].name = name;
+                    users[userIndex].email = email;
+                    users[userIndex].role = role;
+                    console.log('Usuario actualizado:', users[userIndex]);
+                    showNotification('Usuario actualizado correctamente', 'success');
+                }
+            } else {
+                // Agregar nuevo usuario
+                console.log('Agregando nuevo usuario');
+                const newUser = {
+                    id: nextId++,
+                    name: name,
+                    email: email,
+                    role: role,
+                    active: true
+                };
+                users.push(newUser);
+                console.log('Usuario agregado:', newUser);
+                console.log('Lista completa:', users);
+                showNotification('Usuario agregado correctamente', 'success');
+            }
+
+            renderUsers();
+            setTimeout(() => closeUserModal(), 500);
+        });
+
+        // Inicializar
+        renderUsers();
+        console.log('Sistema inicializado con', users.length, 'usuarios');
+    </script>
+</body>
+</html>
