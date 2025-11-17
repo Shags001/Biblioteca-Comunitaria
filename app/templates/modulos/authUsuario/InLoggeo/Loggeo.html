@@ -5,52 +5,50 @@
 {% block content %}
 <main class="container mt-4">
     <div class="login-container">
-        <div class="logo-container">
-            <h1 class="logo-text">📚 Biblioteca</h1>
-            <p class="slogan">Conectando mentes, construyendo puentes</p>
-        </div>
-
         <h2 class="login-title">¡Hola! Bienvenido de vuelta</h2>
         <p class="login-subtitle">Ingresa tus datos para continuar</p>
+
 
         <div class="alert-custom alert-error d-none" id="errorMessage">
             Te faltó llenar algunos campos
         </div>
 
-        <form id="loginForm">
+        <form id="loginForm" method="POST" action="{{ url_for('main.login') }}">
             <div class="mb-3">
-                <label for="email" class="form-label">Usuario o correo</label>
-                <input 
-                    type="text" 
-                    class="form-control" 
-                    id="email" 
-                    placeholder="ejemplo@correo.com"
-                    required
-                >
+                <label for="email" class="form-label"><i data-lucide="user" class="me-2"></i>Usuario o correo</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i data-lucide="mail"></i></span>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="email" 
+                        name="email"
+                        placeholder="ejemplo@correo.com"
+                        required
+                    >
+                </div>
             </div>
-
             <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <input 
-                    type="password" 
-                    class="form-control" 
-                    id="password" 
-                    placeholder="••••••••"
-                    required
-                >
+                <label for="password" class="form-label"><i data-lucide="lock" class="me-2"></i>Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i data-lucide="key"></i></span>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
             </div>
-
-            <button type="submit" class="btn-primary-custom">
-                Iniciar sesión
+            <button type="submit" class="btn-primary-custom d-flex align-items-center justify-content-center">
+                <i data-lucide="log-in" class="me-2"></i>Iniciar sesión
             </button>
         </form>
 
-        <div class="alert-custom alert-success d-none" id="successMessage">
-            ¡Listo! Iniciando sesión...
-        </div>
-    </div>
-
-    <script>
+    <!-- <script>
         const form = document.getElementById('loginForm');
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
@@ -115,6 +113,7 @@
         passwordInput.addEventListener('input', function() {
             this.classList.remove('is-invalid');
         });
-    </script>
+    </script> -->
+
 </main>
 {% endblock %}
