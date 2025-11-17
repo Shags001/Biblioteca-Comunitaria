@@ -1,0 +1,55 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
+            <img 
+                src="{{ url_for('static', filename='img/logo.png') }}" 
+                alt="Logo de la Biblioteca"
+            >
+        </a>
+        <button 
+            class="navbar-toggler" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav" 
+            aria-controls="navbarNav" 
+            aria-expanded="false" 
+            aria-label="Alternar navegación"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav align-items-center justify-content-end w-100">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.index') }}"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Inicio" aria-label="Inicio">
+                        <i data-lucide="home"></i> Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Registrar un libro" aria-label="Libros"> 
+                        <i data-lucide="book"></i> Libros
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Nuevo préstamo" aria-label="Prestamos">
+                        <i data-lucide="book-up"></i> Prestamos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Procesar devolución" aria-label="Devoluciones">
+                        <i data-lucide="undo-2"></i> Devoluciones
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Gestionar usuarios" aria-label="Usuarios">
+                        <i data-lucide="users"></i> Usuarios
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
