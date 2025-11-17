@@ -19,4 +19,4 @@ def roles():
 
 @bp.route('/gestLibro')
 def gestLibro():
-    return render_template('modulos/gestLibro/index.html', title='Gestion de Libros')
+    return render_template('modulos/gestLibros/index.html', title='Gestion de Libros')
