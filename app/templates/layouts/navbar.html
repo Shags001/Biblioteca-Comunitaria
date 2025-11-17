@@ -2,9 +2,9 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">
             <img 
-                src="{{ url_for('static', filename='img/logo.png') }}" 
+                src="{{ url_for('static', filename='img/logo.ico') }}" 
                 alt="Logo de la Biblioteca"
-            >
+            > Scriptoria
         </a>
         <button 
             class="navbar-toggler" 
@@ -26,13 +26,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"
+                    <a class="nav-link" href="{{ url_for('main.gestLibro') }}"
                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Registrar un libro" aria-label="Libros"> 
                         <i data-lucide="book"></i> Libros
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"
+                    <a class="nav-link" href="{{ url_for('main.prestamo') }}"
                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Nuevo préstamo" aria-label="Prestamos">
                         <i data-lucide="book-up"></i> Prestamos
                     </a>
@@ -43,12 +43,47 @@
                         <i data-lucide="undo-2"></i> Devoluciones
                     </a>
                 </li>
+                {%- if is_authenticated and user_role == 'Administrador' -%}
                 <li class="nav-item">
-                    <a class="nav-link" href="#"
+                    <a class="nav-link" href="{{ url_for('main.roles') }}"
                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="Gestionar usuarios" aria-label="Usuarios">
                         <i data-lucide="users"></i> Usuarios
                     </a>
                 </li>
+                {%- endif -%}
+                {%- if is_authenticated -%}
+                <!-- Menú de perfil desplegable -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="perfilDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i data-lucide="user"></i> Perfil
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="perfilDropdown">
+                        <li>
+                            <span class="dropdown-item-text">
+                                <i data-lucide="badge-check" style="margin-right:6px;"></i>
+                                Rol: <strong>{{ user_role }}</strong>
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ url_for('main.logout') }}">
+                                <button type="submit" class="dropdown-item d-flex align-items-center">
+                                    <i data-lucide="log-out" style="margin-right:6px;"></i>
+                                    Cerrar sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {%- else -%}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.login') }}"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="Iniciar sesión" aria-label="Iniciar sesión">
+                        <i data-lucide="log-in"></i> Iniciar
+                    </a>
+                </li>
+                {%- endif -%}
             </ul>
         </div>
     </div>

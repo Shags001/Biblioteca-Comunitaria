@@ -17,7 +17,19 @@
 <body>
 
     {% include 'layouts/navbar.html' %} 
-
+    {# Flash / notificaciones flotantes (bottom-right). Renderiza mensajes enviados con flask.flash #}
+    <div id="flashContainer" class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash alert-custom {% if category == 'success' %}alert-success{% elif category == 'danger' %}alert-error{% elif category == 'warning' %}alert-warning{% else %}alert-info{% endif %}" role="alert" data-timeout="3500">
+                        <div class="flash-body">{{ message }}</div>
+                        <button type="button" class="flash-close btn-close" aria-label="Cerrar">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
     {% block content %}
     <main class="container-fluid section-start section-end">
         <div style="height: 500px; border: 1px dashed gray; padding: 20px;">
@@ -28,49 +40,10 @@
     
     {% include 'layouts/footer.html' %}
     
+
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  if (window.lucide) lucide.createIcons();
-
-  var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-  var triggerOption = isTouch ? 'click' : 'hover focus';
-  var triggers = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  triggers.forEach(function (el) {
-    new bootstrap.Tooltip(el, {
-      container: 'body',
-      boundary: 'window',
-      trigger: triggerOption,
-      delay: { show: 100, hide: 50 }
-    });
-  });
-
-  var navbarCollapse = document.getElementById('navbarNav');
-  var toggler = document.querySelector('.navbar-toggler');
-  if (navbarCollapse && toggler) {
-    navbarCollapse.addEventListener('show.bs.collapse', function () {
-      toggler.classList.add('is-open');
-      document.body.classList.add('no-scroll');
-    });
-    navbarCollapse.addEventListener('hidden.bs.collapse', function () {
-      toggler.classList.remove('is-open');
-      document.body.classList.remove('no-scroll');
-    });
-
-    document.querySelectorAll('.navbar-nav .nav-link').forEach(function (link) {
-      link.addEventListener('click', function () {
-        var computed = window.getComputedStyle(toggler);
-        var isTogglerVisible = computed.display !== 'none';
-        if (isTogglerVisible && navbarCollapse.classList.contains('show')) {
-          var bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse, { toggle: false });
-          bsCollapse.hide();
-        }
-      });
-    });
-  }
-});
-</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 </body>
 </html>
