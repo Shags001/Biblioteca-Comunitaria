@@ -1,8 +1,6 @@
 .navbar {
     background-color: var(--clr-ghost-white);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    padding-top: 15px;
-    padding-bottom: 15px;
 }
 
 .navbar-brand {
@@ -58,9 +56,6 @@
 
 
 .navbar, .navbar .container-fluid { overflow: visible; }
-
-
-
 
 .nav-link[data-hint]::after,
 .nav-link[data-hint]:hover::after { display: none !important; }
@@ -118,8 +113,6 @@
     overflow: visible;
 }
 
-
-
 @media (max-width: 991.98px) {
     
     .navbar-collapse { justify-content: flex-start !important; padding: 1rem; }
@@ -142,14 +135,12 @@
         border-bottom: 1px solid rgba(0,0,0,0.04);
     }
 
-   
     .navbar-nav .nav-link [data-lucide] {
         width: 28px;
         height: 28px;
         flex: 0 0 28px;
     }
 
-   
     .navbar-brand {
         margin-right: 0.5rem;
     }
@@ -160,8 +151,57 @@
     }
 }
 
-
 @media (min-width: 992px) {
     .navbar-nav .nav-link { padding: .5rem 1rem; }
 }
 
+/* Asegura que el contenedor de la lista permita overflow y posición relativa */
+.collapse.navbar-collapse {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+/* El padre inmediato del dropdown debe ser relativo */
+.navbar-nav {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* El nav-item dropdown también debe ser relativo */
+.nav-item.dropdown {
+    position: relative !important;
+}
+
+/* El menú dropdown debe estar absolutamente posicionado respecto a su padre */
+.dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    left: auto !important;
+    min-width: 200px !important;
+    z-index: 3000 !important;
+    background: #fff !important;
+    border: 2px solid #AAD4AE !important;
+}
+
+
+
+@media (max-width: 991.98px) {
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 3000 !important;
+        margin: 0 !important;
+    }
+    .navbar-collapse {
+        padding: 0 !important;
+    }
+        .navbar-collapse.show {
+        padding: 0 !important;
+    }
+    body {
+        padding-top: 90px !important; /* Ajusta este valor según la altura de tu navbar */
+    }
+}
