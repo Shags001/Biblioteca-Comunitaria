@@ -1,0 +1,86 @@
+Comandos Git - referencia rápida
+
+Inicializar / clonar
+git init                         # crear repo en el directorio actual
+git clone <url>                  # clonar repo remoto
+
+Estado / inspección
+git status                       # estado de archivos
+git log                          # historial completo
+git log --oneline --graph --all  # historial compacto
+git show <commit>                # mostrar cambios de un commit
+git diff                         # diferencias no staged
+git diff --staged                # diferencias staged
+
+Áreas y commits
+git add <archivo|.>              # añadir cambios al staging
+git commit -m "mensaje"          # crear commit
+git commit --amend               # editar último commit
+git reset --soft <commit>        # mover HEAD, mantener staging
+git reset --mixed <commit>       # mover HEAD, quitar staging (por defecto)
+git reset --hard <commit>        # volver estado y descartar cambios
+git revert <commit>              # crear commit que deshace uno anterior
+
+Ramas
+git branch                       # listar ramas locales
+git branch -a                    # listar ramas locales y remotas
+git branch <nombre>              # crear rama
+git branch -d <nombre>           # borrar rama (si mergeada)
+git checkout <rama>              # cambiar a rama (antiguo)
+git checkout -b <rama>           # crear y cambiar a rama (antiguo)
+git switch <rama>                # cambiar a rama (nuevo)
+git switch -c <rama>             # crear y cambiar a rama (nuevo)
+git merge <rama>                 # merge de otra rama en la actual
+git rebase <rama>                # rebase de commits sobre otra rama
+git rebase -i <base>             # rebase interactivo (reordenar/combinar)
+
+Remoto
+git remote -v                    # ver remotos
+git remote add origin <url>      # añadir remoto
+git fetch                        # traer referencias remotas
+git pull                         # fetch + merge (o rebase si configurado)
+git push                         # enviar cambios
+git push -u origin <rama>        # subir y establecer upstream
+git push --force                 # forzar push (peligroso)
+
+Stash / limpieza
+git stash                        # guardar cambios temporales
+git stash list                    # ver stash
+git stash apply <stash@{0}>      # aplicar stash
+git stash pop                    # aplicar y eliminar stash
+git clean -f                     # eliminar archivos sin trackear
+
+Etiquetas
+git tag                          # listar tags
+git tag <nombre>                 # crear tag ligero
+git tag -a <nombre> -m "msg"     # crear tag anotado
+git push origin --tags           # subir tags
+
+Colaboración y resolución
+git cherry-pick <commit>         # aplicar un commit sobre HEAD
+git blame <archivo>              # ver autor por línea
+git bisect start/- good/bad      # buscar commit que introdujo bug
+git mergetool                     # usar herramienta de merge configurada
+git reflog                       # historial de movimientos de HEAD (recuperar)
+
+Configuración
+git config --global user.name "Nombre"
+git config --global user.email "email@ejemplo.com"
+git config --list
+
+Atajos útiles
+git log --author="Nombre" --since="2 weeks ago"
+git log -p -S "texto"            # buscar cambio que introdujo texto
+git diff <commit1> <commit2>
+git show <branch>:ruta/archivo   # ver archivo en otra rama/commit
+
+Ejemplo flujo rápido:
+1) git init / git clone <url>
+2) git checkout -b feature/x
+3) editar archivos
+4) git add .
+5) git commit -m "feat: descripción"
+6) git push -u origin feature/x
+7) crear PR y mergear
+
+(Guarda este archivo como referencia; hay muchos más subcomandos y opciones.)
