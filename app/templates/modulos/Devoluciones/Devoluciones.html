@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Devoluciones - Biblioteca Comunitaria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="Style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container-custom">
+        <h1 class="titulo-principal">Gestión de Devoluciones</h1>
+        
+        <!-- Registro de Devolución -->
+        <div class="seccion-card">
+            <h2 class="subtitulo-seccion">Registrar Devolución</h2>
+            <form id="formDevolucion" class="form-horizontal">
+                <div class="form-row">
+                    <label for="idPrestamo" class="form-label-inline">ID Préstamo</label>
+                    <input type="text" class="form-control-inline" id="idPrestamo" placeholder="Ingrese ID del préstamo" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="nombreResponsable" class="form-label-inline">Nombre del Responsable</label>
+                    <input type="text" class="form-control-inline" id="nombreResponsable" placeholder="Ingrese nombre del responsable" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="isbn" class="form-label-inline">ISBN</label>
+                    <input type="text" class="form-control-inline" id="isbn" placeholder="Se autocompletará" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label for="tituloLibro" class="form-label-inline">Título del libro</label>
+                    <input type="text" class="form-control-inline" id="tituloLibro" placeholder="Se autocompletará" readonly>
+                </div>
+
+                <div class="form-row-doble">
+                    <div class="form-group-mitad">
+                        <label for="fechaPrestamo" class="form-label-inline">Fecha de préstamo</label>
+                        <input type="date" class="form-control-inline" id="fechaPrestamo" readonly>
+                    </div>
+
+                    <div class="form-group-mitad">
+                        <label for="fechaDevolucionEsperada" class="form-label-inline">Fecha de devolución</label>
+                        <input type="date" class="form-control-inline" id="fechaDevolucionEsperada" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label for="estado" class="form-label-inline">Estado</label>
+                    <select class="form-control-inline" id="estado" required>
+                        <option value="" disabled selected>Seleccione</option>
+                        <option value="devuelto_tiempo">Devuelto a tiempo</option>
+                        <option value="devuelto_retraso">Devuelto con retraso</option>
+                        <option value="danado">Dañado</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label for="fechaDevolucionReal" class="form-label-inline">Fecha de Devolución</label>
+                    <input type="date" class="form-control-inline" id="fechaDevolucionReal" required>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="btn-secundario">Limpiar</button>
+                    <button type="submit" class="btn-principal">Registrar Devolución</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filtros de Búsqueda -->
+        <div class="seccion-card seccion-filtros">
+            <h2 class="subtitulo-seccion">Filtros de Búsqueda</h2>
+            <div class="filtros-container">
+                <div class="filtro-item">
+                    <label for="filtroFecha" class="form-label-inline">Fecha de Devolución</label>
+                    <div class="input-con-icono">
+                        <input type="date" class="form-control-inline" id="filtroFecha">
+                        <span class="icono-buscar">🔍</span>
+                    </div>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="filtroISBN" class="form-label-inline">ISBN</label>
+                    <input type="text" class="form-control-inline" id="filtroISBN" placeholder="Ingrese valor">
+                </div>
+
+                <div class="filtro-item">
+                    <label for="filtroEstado" class="form-label-inline">Estado</label>
+                    <select class="form-control-inline" id="filtroEstado">
+                        <option value="" selected>Seleccione</option>
+                        <option value="opt1">A tiempo</option>
+                        <option value="opt2">Retrasado</option>
+                        <option value="opt3">Dañado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Devoluciones -->
+        <div class="seccion-card">
+            <h2 class="subtitulo-seccion">Historial de Devoluciones</h2>
+            <!-- Los registros se generarán dinámicamente aquí -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-personalizado">
+        <p class="footer-text">Copyright 2024 © Todos los derechos reservados</p>
+    </footer>
+
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+    <script src="Script.js"></script>
+</body>
+</html>
