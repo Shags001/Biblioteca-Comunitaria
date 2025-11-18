@@ -10,20 +10,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar-personalizado">
-        <div class="container-custom">
-            <div class="navbar-content">
-                <a href="#" class="logo-link">🏛️ Scripteria</a>
-                <div class="nav-links">
-                    <a href="#" class="nav-link-item">Libros</a>
-                    <a href="#" class="nav-link-item">Inventarios</a>
-                    <a href="#" class="nav-link-item active">Devoluciones</a>
-                    <a href="#" class="nav-link-item">Historia</a>
-                </div>
-            </div>
-        </div>
-    </nav>
 
     <div class="container-custom">
         <h1 class="titulo-principal">Gestión de Devoluciones</h1>
@@ -34,17 +20,22 @@
             <form id="formDevolucion" class="form-horizontal">
                 <div class="form-row">
                     <label for="idPrestamo" class="form-label-inline">ID Préstamo</label>
-                    <input type="text" class="form-control-inline" id="idPrestamo" placeholder="Ingrese valor" required>
+                    <input type="text" class="form-control-inline" id="idPrestamo" placeholder="Ingrese ID del préstamo" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="nombreResponsable" class="form-label-inline">Nombre del Responsable</label>
+                    <input type="text" class="form-control-inline" id="nombreResponsable" placeholder="Ingrese nombre del responsable" required>
                 </div>
 
                 <div class="form-row">
                     <label for="isbn" class="form-label-inline">ISBN</label>
-                    <input type="text" class="form-control-inline" id="isbn" placeholder="Ingrese valor" readonly>
+                    <input type="text" class="form-control-inline" id="isbn" placeholder="Se autocompletará" readonly>
                 </div>
 
                 <div class="form-row">
                     <label for="tituloLibro" class="form-label-inline">Título del libro</label>
-                    <input type="text" class="form-control-inline" id="tituloLibro" placeholder="Ingrese valor" readonly>
+                    <input type="text" class="form-control-inline" id="tituloLibro" placeholder="Se autocompletará" readonly>
                 </div>
 
                 <div class="form-row-doble">
@@ -99,11 +90,12 @@
                 </div>
 
                 <div class="filtro-item">
-                    <label for="filtroCliente" class="form-label-inline">Cliente del Préstamo</label>
-                    <select class="form-control-inline" id="filtroCliente">
+                    <label for="filtroEstado" class="form-label-inline">Estado</label>
+                    <select class="form-control-inline" id="filtroEstado">
                         <option value="" selected>Seleccione</option>
-                        <option value="cliente1">Cliente 1</option>
-                        <option value="cliente2">Cliente 2</option>
+                        <option value="opt1">A tiempo</option>
+                        <option value="opt2">Retrasado</option>
+                        <option value="opt3">Dañado</option>
                     </select>
                 </div>
             </div>
@@ -112,57 +104,7 @@
         <!-- Historial de Devoluciones -->
         <div class="seccion-card">
             <h2 class="subtitulo-seccion">Historial de Devoluciones</h2>
-            
-            <!-- Registro 1 -->
-            <div class="registro-historial">
-                <div class="registro-header-historial">
-                    <h3 class="registro-titulo-historial">El Diseño de la Comunidad</h3>
-                    <span class="badge-estado badge-devuelto">DEVUELTO</span>
-                </div>
-                <p class="registro-info-text">ID: 30/10/2025 13:15 Horas</p>
-                <div class="registro-footer-historial">
-                    <div class="etiquetas-container">
-                        <span class="etiqueta-info">DEVUELTO</span>
-                        <span class="etiqueta-info">10/11/2025</span>
-                        <span class="etiqueta-info">DAÑADO</span>
-                    </div>
-                    <span class="badge-tiempo badge-verde">A TIEMPO</span>
-                </div>
-            </div>
-
-            <!-- Registro 2 -->
-            <div class="registro-historial">
-                <div class="registro-header-historial">
-                    <h3 class="registro-titulo-historial">Historia de El Salvador</h3>
-                    <span class="badge-estado badge-devuelto">DEVUELTO</span>
-                </div>
-                <p class="registro-info-text">ID: 30/10/2025 13:15 Horas</p>
-                <div class="registro-footer-historial">
-                    <div class="etiquetas-container">
-                        <span class="etiqueta-info">DEVUELTO</span>
-                        <span class="etiqueta-info">10/11/2025</span>
-                        <span class="etiqueta-info">DAÑADO</span>
-                    </div>
-                    <span class="badge-tiempo badge-rojo">DAÑADO</span>
-                </div>
-            </div>
-
-            <!-- Registro 3 -->
-            <div class="registro-historial">
-                <div class="registro-header-historial">
-                    <h3 class="registro-titulo-historial">Cien Años de Soledad</h3>
-                    <span class="badge-estado badge-devuelto">DEVUELTO</span>
-                </div>
-                <p class="registro-info-text">ID: 30/10/2025 13:15 Horas</p>
-                <div class="registro-footer-historial">
-                    <div class="etiquetas-container">
-                        <span class="etiqueta-info">DEVUELTO</span>
-                        <span class="etiqueta-info">10/11/2025</span>
-                        <span class="etiqueta-info">RETRASADO</span>
-                    </div>
-                    <span class="badge-tiempo badge-amarillo">RETRASADO</span>
-                </div>
-            </div>
+            <!-- Los registros se generarán dinámicamente aquí -->
         </div>
     </div>
 
