@@ -1,0 +1,130 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Devoluciones - Biblioteca Comunitaria{% endblock %}
+
+{% block content %}
+<main class="container mt-4 rol-container">
+    <div class="container-custom">
+        <h1 class="titulo-principal">Gestión de Devoluciones</h1>
+        <!-- Estilos específicos del módulo (desde static) -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/devoluciones.css') }}">
+        
+        <!-- Registro de Devolución -->
+        <div class="seccion-card">
+            <h2 class="subtitulo-seccion">Registrar Devolución</h2>
+            <form id="formDevolucion" class="form-horizontal">
+                <div class="form-row" style="position:relative;">
+                    <label for="idPrestamo" class="form-label-inline"><i data-lucide="hash" class="me-2"></i>ID Préstamo</label>
+                    <div style="flex:1; position:relative;">
+                        <input type="text" class="form-control-inline" id="idPrestamo" placeholder="Ingrese ID del préstamo" autocomplete="off" required>
+                        <!-- Suggestions dropdown (se mostrará cuando haya coincidencias) -->
+                        <div id="prestamoSuggestions" class="list-group position-absolute" style="z-index:2500; top:100%; left:0; right:0; max-height:220px; overflow:auto; display:none;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label for="nombreResponsable" class="form-label-inline"><i data-lucide="user" class="me-2"></i>Nombre del Responsable</label>
+                    <input type="text" class="form-control-inline" id="nombreResponsable" placeholder="Ingrese nombre del responsable" required>
+                </div>
+
+                <div class="form-row">
+                    <label for="isbn" class="form-label-inline"><i data-lucide="book" class="me-2"></i>ISBN</label>
+                    <input type="text" class="form-control-inline" id="isbn" placeholder="Se autocompletará" readonly>
+                </div>
+
+                <div class="form-row">
+                    <label for="tituloLibro" class="form-label-inline"><i data-lucide="book-open" class="me-2"></i>Título del libro</label>
+                    <input type="text" class="form-control-inline" id="tituloLibro" placeholder="Se autocompletará" readonly>
+                </div>
+
+                <div class="form-row-doble">
+                    <div class="form-group-mitad">
+                        <label for="fechaPrestamo" class="form-label-inline"><i data-lucide="calendar" class="me-2"></i>Fecha de préstamo</label>
+                        <input type="date" class="form-control-inline" id="fechaPrestamo" readonly>
+                    </div>
+
+                    <div class="form-group-mitad">
+                        <label for="fechaDevolucionEsperada" class="form-label-inline"><i data-lucide="calendar" class="me-2"></i>Fecha de devolución</label>
+                        <input type="date" class="form-control-inline" id="fechaDevolucionEsperada" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label for="estado" class="form-label-inline"><i data-lucide="tag" class="me-2"></i>Estado</label>
+                    <select class="form-control-inline" id="estado" required>
+                        <option value="" disabled selected>Seleccione</option>
+                        <option value="devuelto_tiempo">Devuelto a tiempo</option>
+                        <option value="devuelto_retraso">Devuelto con retraso</option>
+                        <option value="danado">Dañado</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label for="fechaDevolucionReal" class="form-label-inline"><i data-lucide="calendar" class="me-2"></i>Fecha de Devolución</label>
+                    <input type="date" class="form-control-inline" id="fechaDevolucionReal" required>
+                </div>
+
+                <div class="form-buttons">
+                    {% if user_id %}
+                    <button type="button" class="btn-secundario"><i data-lucide="x" class="me-2"></i>Limpiar</button>
+                    <button type="submit" class="btn-principal"><i data-lucide="save" class="me-2"></i>Registrar Devolución</button>
+                    {% else %}
+                    <div class="text-center w-100">
+                        <p class="text-muted mb-0" style="font-weight:600;">Iniciar sesión para devolución</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- Filtros de Búsqueda -->
+        <div class="seccion-card seccion-filtros">
+            <h2 class="subtitulo-seccion">Filtros de Búsqueda</h2>
+            <div class="filtros-container">
+                <div class="filtro-item">
+                    <label for="filtroFecha" class="form-label-inline">Fecha de Devolución</label>
+                    <div class="input-con-icono">
+                        <input type="date" class="form-control-inline" id="filtroFecha">
+                        <i data-lucide="calendar"></i>
+                    </div>
+                </div>
+
+                <div class="filtro-item">
+                    <label for="filtroISBN" class="form-label-inline">Editorial</label>
+                    <input type="text" class="form-control-inline" id="filtroISBN" placeholder="Ingrese editorial o título">
+                </div>
+
+                <div class="filtro-item">
+                    <label for="filtroEstado" class="form-label-inline">Estado</label>
+                    <select class="form-control-inline" id="filtroEstado">
+                        <option value="" selected>Seleccione</option>
+                        <option value="devuelto_tiempo">A tiempo</option>
+                        <option value="devuelto_retraso">Retrasado</option>
+                        <option value="danado">Dañado</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial de Devoluciones -->
+        <div class="seccion-card">
+            <h2 class="subtitulo-seccion">Historial de Devoluciones</h2>
+            <!-- Los registros se generarán dinámicamente aquí -->
+        </div>
+    </div>
+
+    {# Expose current user to client-side scripts so we can show who registered devoluciones #}
+    <div id="currentUserData" style="display:none;"
+        data-user-name="{{ user_name or '' }}"
+        data-user-id="{{ user_id or '' }}"></div>
+
+    {# Aseguramos que los helpers de API estén cargados antes del script del módulo #}
+    {# Los scripts del módulo se cargan en el bloque bottom_scripts (se renderizan después de los scripts globales) #}
+</main>
+{% endblock %}
+
+{% block bottom_scripts %}
+<script src="{{ url_for('static', filename='js/db.js') }}"></script>
+<script src="{{ url_for('static', filename='js/devoluciones.js') }}"></script>
+{% endblock %}

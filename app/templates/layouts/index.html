@@ -1,0 +1,58 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Inicio - Biblioteca{% endblock %}
+
+{% block content %}
+<main class="container inicio-container" style="display:flex;justify-content:center;align-items:center;min-height:70vh;">
+    <div id="bienvenida" class="p-4 rounded shadow-sm" style="width:100%;max-width:520px;margin:auto;opacity:0;transition:opacity 1.5s;background-color: var(--clr-ghost-white);">
+        {% if is_authenticated and user_name %}
+            <h1 class="mb-3 fw-bold">¡Hola {{user_name}}!</h1>
+            {% if user_role == 'Administrador' %}
+                <p class="lead mb-4">Bienvenido al panel de administración. Aquí puedes gestionar usuarios, modificar roles, actualizar el catálogo y supervisar los préstamos.</p>
+                <ul class="list-unstyled mb-4 text-start">
+                    <li class="mb-2"><i data-lucide="users" class="me-2"></i>Gestiona usuarios y roles de la comunidad.</li>
+                    <li class="mb-2"><i data-lucide="book" class="me-2"></i>Agrega o edita libros en el catálogo.</li>
+                    <li class="mb-2"><i data-lucide="handshake" class="me-2"></i>Supervisa y gestiona los préstamos.</li>
+                </ul>
+            {% else %}
+                <p class="lead mb-4">Bienvenido al panel de gestión. Aquí puedes registrar préstamos y actualizar el catálogo de la biblioteca.</p>
+                <ul class="list-unstyled mb-4 text-start">
+                    <li class="mb-2"><i data-lucide="book" class="me-2"></i>Agrega o edita libros en el catálogo.</li>
+                    <li class="mb-2"><i data-lucide="handshake" class="me-2"></i>Registra y gestiona los préstamos de la comunidad.</li>
+                </ul>
+            {% endif %}
+        {% else %}
+            <h1 class="mb-3 fw-bold">¡Bienvenido!</h1>
+            <p class="lead mb-4">Por favor inicia sesión para acceder al panel de gestión de la biblioteca.</p>
+            <div class="d-flex justify-content-center mb-4">
+                <a href="/login" class="btn btn-primary-custom d-flex align-items-center px-4 py-2" style="min-width:180px; max-width:220px;">
+                    <i data-lucide="log-in" class="me-2"></i>Iniciar Sesión
+                </a>
+            </div>
+        {% endif %}
+        {% if is_authenticated %}
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-4" style="max-width:100%;">
+                <a href="/gestLibro" class="btn btn-primary-custom d-flex align-items-center px-4 py-2" style="min-width:180px; max-width:220px;">
+                    <i data-lucide="book" class="me-2"></i>Gestionar Catálogo
+                </a>
+                <a href="/prestamo" class="btn btn-secondary-custom d-flex align-items-center px-4 py-2" style="min-width:180px; max-width:220px;">
+                    <i data-lucide="handshake" class="me-2"></i>Registrar Préstamo
+                </a>
+                {% if user_role == 'Administrador' %}
+                <a href="/rol" class="btn btn-primary-custom d-flex align-items-center px-4 py-2" style="min-width:180px; max-width:220px;">
+                    <i data-lucide="users" class="me-2"></i>Gestionar Usuarios
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</main>
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        var bienvenida = document.getElementById('bienvenida');
+        setTimeout(function() {
+            bienvenida.style.opacity = 1;
+        }, 300);
+    });
+</script>
+{% endblock %}

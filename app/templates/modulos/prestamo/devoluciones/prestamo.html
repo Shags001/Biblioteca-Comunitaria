@@ -1,0 +1,1308 @@
+
+{% extends 'layouts/base.html' %}
+
+{% block title %}Gestion de Prestamos{% endblock %}
+
+{% block content %}
+
+<main class="container mt-4 prestamo-module">
+  <div class="row contenedor-formulario-row mx-auto mb-5 align-items-start" style="flex-direction: row !important;">
+    <!-- Formulario -->
+    <div class="col-12 col-lg-7 mb-4 mb-lg-0 form-card">
+      <div class="card shadow-sm formulario-centrado h-100">
+        <div class="card-header">
+          <h4 class="mb-0 fw-semibold">Registrar / Editar Préstamo</h4>
+        </div>
+        <div class="card-body">
+          <form id="prestamoForm" class="modern-form">
+            <!-- Hidden fields populated from sessionStorage.loan_book or URL params -->
+            <input type="hidden" id="loanBookId" name="id_libro" value="">
+            <input type="hidden" id="loanBookISBN" name="ISBN" value="">
+            <input type="hidden" id="loanUserId" name="id_usuario" value="{{ user_id or '' }}">
+            <div class="row g-4">
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="solicitante" class="form-label"><i data-lucide="user" class="me-2"></i>Solicitante</label>
+                  <input type="text" class="form-control modern-input" id="solicitante" placeholder="Nombre del solicitante" required>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="tipoPrestamo" class="form-label"><i data-lucide="layers" class="me-2"></i>Tipo de préstamo</label>
+                  <select class="form-select modern-input" id="tipoPrestamo" required>
+                    <option selected disabled>Seleccione tipo</option>
+                    <option>Libro</option>
+                    <option>Recurso digital</option>
+                    <option>Equipo</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-12 col-md-8">
+                <div class="form-group position-relative">
+                  <label for="elementoPrestado" class="form-label"><i data-lucide="book-open" class="me-2"></i>Elemento prestado</label>
+                  <input type="text" class="form-control modern-input" id="elementoPrestado" placeholder="Ejemplo: El Principito" autocomplete="off" required>
+                  <!-- suggestions will be injected here -->
+                  <div id="bookSuggestions" class="list-group position-absolute d-none" style="z-index:2500; top:100%; left:0; right:0; max-height:220px; overflow:auto;"></div>
+                  <small id="bookAvailability" class="text-muted d-block mt-1" aria-live="polite"></small>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label for="fechaPrestamo" class="form-label"><i data-lucide="calendar" class="me-2"></i>Fecha de préstamo</label>
+                  <input type="date" class="form-control modern-input" id="fechaPrestamo" required>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label for="fechaDevolucion" class="form-label"><i data-lucide="calendar-check" class="me-2"></i>Fecha de devolución</label>
+                  <input type="date" class="form-control modern-input" id="fechaDevolucion" required>
+                </div>
+              </div>
+              <!-- Estado editing removed from préstamos screen; devoluciones module handles returns -->
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label for="cantidadPrestamo" class="form-label"><i data-lucide="layers" class="me-2"></i>Cantidad</label>
+                  <input type="number" class="form-control modern-input" id="cantidadPrestamo" min="1" value="1">
+                </div>
+              </div>
+            </div>
+            {% if user_id %}
+            <div class="text-end mt-4">
+              <button type="reset" class="btn btn-secondary me-2">Limpiar</button>
+              <button type="submit" class="btn btn-primary">Guardar Préstamo</button>
+            </div>
+            {% else %}
+            <div class="text-end mt-4">
+              <small class="text-muted">Inicie sesión para registrar préstamos.</small>
+            </div>
+            {% endif %}
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Explicación -->
+    <div class="col-12 col-lg-5 explicacion-wrapper d-flex justify-content-lg-end align-self-start">
+      <!-- make the explanation card narrower and sticky on large screens so it appears to the right of the form -->
+      <div class="card shadow-sm explicacion-card h-100" style="max-width:380px; position:sticky; top:90px; margin-left:1rem;">
+        <div class="card-header">
+          <h5 class="mb-0 fw-semibold">Descripción de campos</h5>
+        </div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li><strong>Solicitante:</strong> Persona que solicita el préstamo.</li>
+            <li><strong>Tipo de préstamo:</strong> Tipo de recurso (libro, documento, equipo).</li>
+            <li><strong>Elemento prestado:</strong> Libro específico prestado.</li>
+            <li><strong>Fecha Préstamo:</strong> Día en que se realiza el préstamo.</li>
+            <li><strong>Fecha Devolución:</strong> Fecha límite de devolución.</li>
+            <li><strong>Estado:</strong> Activo, devuelto o vencido.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h4 class="mb-0 fw-semibold">Listado de Préstamos</h4>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle table-hover mb-0">
+        <thead class="text-center">
+          <tr>
+            <th><i data-lucide="hash" class="me-1"></i>ID</th>
+            <th><i data-lucide="user" class="me-1"></i>Solicitante</th>
+            <th><i data-lucide="book-open" class="me-1"></i>Elemento</th>
+            <th><i data-lucide="layers" class="me-1"></i>Tipo</th>
+            <th><i data-lucide="calendar" class="me-1"></i>Fecha Préstamo</th>
+            <th><i data-lucide="calendar-check" class="me-1"></i>Fecha Devolución</th>
+            <th><i data-lucide="layers" class="me-1"></i>Cantidad</th>
+            <th><i data-lucide="activity" class="me-1"></i>Estado</th>
+            <th><i data-lucide="edit-3" class="me-1"></i>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<!-- Modal para Editar Préstamo -->
+<div class="modal-overlay d-none" id="prestamoModal">
+  <div class="modal-custom">
+    <div class="modal-header-custom d-flex justify-content-between align-items-center">
+      <h2 class="modal-title" id="prestamoModalTitle">Editar Préstamo</h2>
+      <button class="btn-close-modal" id="btnCerrarPrestamoModal"><i data-lucide="x" style="font-size:1.2em;"></i></button>
+    </div>
+    <div class="modal-body-custom">
+          <form id="prestamoModalForm">
+        <input type="hidden" id="mPrestamoId" name="id_prestamo">
+        <input type="hidden" id="mLoanBookId" name="id_libro" value="">
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="mSolicitante" class="form-label"><i data-lucide="user" class="me-2"></i>Solicitante</label>
+            <input type="text" class="form-control" id="mSolicitante" name="solicitante" required>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="mTipoPrestamo" class="form-label"><i data-lucide="layers" class="me-2"></i>Tipo</label>
+            <select class="form-select" id="mTipoPrestamo" name="tipo">
+              <option>Libro</option>
+              <option>Recurso digital</option>
+              <option>Equipo</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6 position-relative">
+            <label for="mElementoPrestado" class="form-label"><i data-lucide="book-open" class="me-2"></i>Elemento prestado</label>
+            <input type="text" class="form-control" id="mElementoPrestado" name="elemento_prestado" autocomplete="off" required>
+            <div id="mBookSuggestions" class="list-group position-absolute d-none" style="z-index:2600; top:100%; left:0; right:0; max-height:220px; overflow:auto;"></div>
+            <small id="mBookAvailability" class="text-muted d-block mt-1" aria-live="polite"></small>
+          </div>
+          <div class="col-6 col-md-3">
+            <label for="mFechaPrestamo" class="form-label"><i data-lucide="calendar" class="me-2"></i>Fecha préstamo</label>
+            <input type="date" class="form-control" id="mFechaPrestamo" name="fecha_prestamo" required>
+          </div>
+          <div class="col-6 col-md-3">
+            <label for="mFechaDevolucion" class="form-label"><i data-lucide="calendar-check" class="me-2"></i>Fecha devolución</label>
+            <input type="date" class="form-control" id="mFechaDevolucion" name="fecha_devolucion" required>
+          </div>
+          <!-- Estado is managed in Devoluciones; modal does not allow changing estado here -->
+          <div class="col-6 col-md-3">
+            <label for="mCantidadPrestamo" class="form-label"><i data-lucide="layers" class="me-2"></i>Cantidad</label>
+            <input type="number" class="form-control" id="mCantidadPrestamo" name="cantidad" min="1" value="1">
+          </div>
+        </div>
+        <div class="modal-footer-custom d-flex justify-content-end gap-2 mt-3">
+          <button type="button" class="btn-secondary-custom" id="mBtnCancelar">Cancelar</button>
+          <button type="submit" class="btn-primary-custom" id="mBtnGuardar">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Data holder: expose server-side user_name and role safely via data attrs -->
+<div id="currentUserData" data-user-name="{{ user_name or '' }}" data-user-role="{{ user_role or '' }}" style="display:none" aria-hidden="true"></div>
+<!-- Confirmation modal for préstamos (local) -->
+<div class="modal-overlay d-none" id="confirmModalPrestamo">
+  <div class="modal-custom" role="dialog" aria-modal="true" aria-labelledby="confirmPrestamoTitle">
+    <div class="modal-header-custom d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center"><i data-lucide="alert-triangle" class="me-2 text-warning"></i><h3 id="confirmPrestamoTitle" class="modal-title mb-0">Confirmar acción</h3></div>
+      <button class="btn-close-modal" id="confirmPrestamoClose">✕</button>
+    </div>
+    <div class="modal-body-custom">
+      <p id="confirmPrestamoMessage">¿Confirmar?</p>
+    </div>
+    <div class="modal-footer-custom d-flex justify-content-end gap-2">
+      <button type="button" class="btn-secondary-custom" id="confirmPrestamoCancelBtn">Cancelar</button>
+      <button type="button" class="btn-primary-custom" id="confirmPrestamoOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+<style>
+/* Compact confirm modal for prestamos page */
+#confirmModalPrestamo .modal-custom{max-width:420px;padding:0.6rem;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,0.10)}
+#confirmModalPrestamo .modal-custom{transform:scale(.96);opacity:0;transition:transform .18s ease, opacity .18s ease}
+#confirmModalPrestamo:not(.d-none) .modal-custom{transform:scale(1);opacity:1}
+#confirmModalPrestamo .modal-header-custom{padding:0.5rem 0.8rem;border-bottom:1px solid #eef2f6}
+#confirmModalPrestamo .modal-body-custom{padding:0.7rem 0.9rem;font-size:0.95rem;color:#222}
+#confirmModalPrestamo .modal-footer-custom{padding:0.6rem 0.9rem}
+#confirmModalPrestamo .modal-title{font-size:1rem;margin:0}
+#confirmModalPrestamo .btn-primary-custom{background:var(--clr-celadon);border:0;padding:0.45rem 0.9rem;border-radius:6px;color:var(--clr-gunmetal)}
+#confirmModalPrestamo .btn-secondary-custom{background:var(--clr-ghost-white);border:0;padding:0.45rem 0.9rem;border-radius:6px;color:var(--clr-gunmetal)}
+#confirmModalPrestamo .btn-close-modal{background:transparent;border:0;font-size:1rem}
+@media (max-width:480px){ #confirmModalPrestamo .modal-custom{width:92vw;max-width:92vw}}
+/* visual highlight for newly created/updated rows */
+.new-highlight{animation: pulseHighlight 2s ease-in-out;}
+@keyframes pulseHighlight{0%{background:rgba(198, 239, 206, 0.95)}50%{background:rgba(255,255,153,0.9)}100%{background:transparent}}
+/* small 'Nuevo' badge used when highlighting a freshly added row */
+.badge-new{display:inline-block;background:#ffd54f;color:#2d2d2d;padding:0.12rem 0.45rem;border-radius:0.35rem;font-size:0.75rem;font-weight:600;margin-left:0.5rem}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Helper: render lucide icons after dynamic DOM inserts.
+  function renderLucide() {
+    try {
+      if (window.lucide) {
+        if (typeof window.lucide.replace === 'function') window.lucide.replace();
+        else if (typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+      }
+    } catch (e) { /* ignore */ }
+  }
+  // Helper to highlight a row by prestamo id (visual confirmation) - global so submit handlers can call it
+  // Observe tbody for an inserted row matching the given prestamo id and call highlight when found
+  function observeForRow(prestamoId, timeoutMs = 3000) {
+    try {
+      if (!prestamoId) return;
+      const tbody = document.querySelector('table.table tbody');
+      if (!tbody) return;
+      const selector = `tr[data-id="${String(prestamoId)}"]`;
+      // if already present, highlight immediately
+      if (tbody.querySelector(selector)) { try { window.highlightRowById(prestamoId); } catch(e){}; return; }
+      const mo = new MutationObserver((mutations, observer) => {
+        for (const m of mutations) {
+          if (m.addedNodes && m.addedNodes.length) {
+            for (const n of m.addedNodes) {
+              try {
+                if (n.nodeType === 1 && (n.matches && n.matches(selector) || (n.querySelector && n.querySelector(selector)))) {
+                  observer.disconnect();
+                  try { window.highlightRowById(prestamoId); } catch (e) {}
+                  return;
+                }
+              } catch (e) { /* ignore individual node errors */ }
+            }
+          }
+        }
+      });
+      mo.observe(tbody, { childList: true, subtree: true });
+      // fail-safe: stop observing after timeout
+      setTimeout(() => { try { mo.disconnect(); console.debug('observeForRow: timed out for id', prestamoId); } catch(e){} }, timeoutMs);
+    } catch (e) { console.debug('observeForRow failed', e); }
+  }
+
+  window.highlightRowById = function(prestamoId) {
+    try {
+      if (!prestamoId) { console.debug('highlightRowById: called with empty id'); return; }
+      const tbody = document.querySelector('table.table tbody');
+      if (!tbody) { console.debug('highlightRowById: tbody not found'); return; }
+      // Primary selector: tr[data-id="..."]
+      let target = tbody.querySelector(`tr[data-id="${String(prestamoId)}"]`);
+      // Fallbacks: numeric vs string mismatch, or server returned id under different shape
+      if (!target) {
+        // try numeric coercion
+        target = tbody.querySelector(`tr[data-id="${Number(prestamoId)}"]`);
+      }
+      if (!target) {
+        // last resort: match first cell text (ID column) — trim and compare
+        const rows = tbody.querySelectorAll('tr');
+        for (const r of rows) {
+          const first = r.querySelector('td:first-child');
+          if (!first) continue;
+          if (String((first.textContent||'').trim()) === String(prestamoId)) { target = r; break; }
+        }
+      }
+  if (!target) { console.debug('highlightRowById: target row not found for id=', prestamoId); try { observeForRow(prestamoId, 3500); } catch(e){}; return; }
+      try { target.classList.remove('new-highlight'); } catch(e){}
+      // force reflow to restart animation
+      void target.offsetWidth;
+      try { target.classList.add('new-highlight'); } catch(e){}
+      // insert a temporary 'Nuevo' badge in the second cell for visual affordance
+      try {
+        const secondCell = target.querySelector('td:nth-child(2)');
+        if (secondCell) {
+          if (!secondCell.querySelector('.badge-new')) {
+            const badge = document.createElement('span');
+            badge.className = 'badge-new';
+            badge.textContent = 'Nuevo';
+            secondCell.appendChild(badge);
+            // remove badge after same duration as highlight
+            setTimeout(() => { try { badge.remove(); } catch (e) {} }, 2400);
+          }
+        }
+      } catch (e) { console.debug('highlightRowById: badge insertion failed', e); }
+      // scroll into view smoothly
+      try { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { console.debug('highlightRowById: scrollIntoView failed', e); }
+      // remove highlight after animation duration + small buffer
+      setTimeout(() => { try { target.classList.remove('new-highlight'); } catch (e) { console.debug('highlightRowById: remove highlight failed', e); } }, 2400);
+    } catch (e) { console.debug('highlightRowById: unexpected error', e); }
+  };
+  // Shared caches & helpers used across form and modal
+  let BOOKS_CACHE = [];
+  // map bookId -> active loan count (computed from /api/prestamos)
+  let LOANS_MAP = {};
+
+  // Utility: clamp an <input type="number"> to its max attribute when present
+  function clampNumberInputToMax(inputEl) {
+    if (!inputEl) return;
+    try {
+      const maxAttr = inputEl.getAttribute('max');
+      if (maxAttr == null) return; // no max set
+      const max = Number(maxAttr);
+      if (!isFinite(max)) return;
+      let val = Number(inputEl.value);
+      if (!isFinite(val)) val = 0;
+      if (val > max) {
+        inputEl.value = String(max);
+      }
+      if (val < Number(inputEl.getAttribute('min') || 0)) {
+        const minv = Number(inputEl.getAttribute('min') || 0);
+        inputEl.value = String(minv);
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  async function loadBooksCache() {
+    try {
+      const r = await fetch('/api/libros?_=' + Date.now(), { cache: 'no-store', headers: { 'Accept': 'application/json' } });
+      if (r.ok) BOOKS_CACHE = await r.json();
+    } catch (e) {
+      BOOKS_CACHE = [];
+    }
+  }
+
+  async function loadPrestamosCache() {
+    try {
+      const r = await fetch('/api/prestamos?_=' + Date.now(), { cache: 'no-store', headers: { 'Accept': 'application/json' } });
+      if (!r.ok) { LOANS_MAP = {}; return; }
+      const all = await r.json().catch(()=>[]);
+      const map = {};
+      if (Array.isArray(all)) {
+        all.forEach(p => {
+          const estado = (p.estado || '').toString().toLowerCase();
+          if (estado !== 'activo' && estado !== 'active') return;
+          const idLibroFromP = p.id_libro || p.idLibro || p.libro_id || p.id_lib || null;
+          if (!idLibroFromP) return;
+          const c = (typeof p.cantidad === 'number' && !isNaN(p.cantidad)) ? p.cantidad : (p.cantidad ? Number(p.cantidad) : 1);
+          map[idLibroFromP] = (map[idLibroFromP] || 0) + (isNaN(c) ? 1 : c);
+        });
+      }
+      LOANS_MAP = map;
+    } catch (e) {
+      LOANS_MAP = {};
+    }
+  }
+
+  function getAvailableForBook(b) {
+    if (!b) return null;
+    // Prefer explicit cantidadDisponible when present (represents currently available copies)
+    try {
+      const d = b.cantidadDisponible != null ? Number(b.cantidadDisponible) : null;
+      if (d != null && !isNaN(d)) return Math.max(0, d);
+    } catch (e) { /* ignore and continue to fallback */ }
+
+    // Fallback: try to compute from known totals and active loans
+    const nLib = b.numeroLibros != null ? Number(b.numeroLibros) : null;
+    const p = b.cantidadPrestada != null ? Number(b.cantidadPrestada) : null;
+    const copies = b.copies != null ? Number(b.copies) : null;
+    let total = null;
+    if (!isNaN(nLib) && nLib != null) total = nLib;
+    else if (!isNaN(p) && !isNaN(d) && d != null && p != null) total = d + p;
+    else if (!isNaN(copies) && copies != null) total = copies;
+    if (total != null) {
+      const loaned = LOANS_MAP[b.id] || LOANS_MAP[b.idLibro] || LOANS_MAP[b.id_lib] || 0;
+      return Math.max(0, Number(total) - Number(loaned));
+    }
+    return null;
+  }
+
+  function escapeHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // load caches in background
+  loadBooksCache();
+  loadPrestamosCache();
+  try {
+    let raw = null;
+    try { raw = sessionStorage.getItem('loan_book'); } catch(e) { raw = null; }
+    let book = null;
+    if (raw) {
+      try { book = JSON.parse(raw); } catch (e) { book = null; }
+      // clear after reading so repeated opens don't reuse stale data
+      try { sessionStorage.removeItem('loan_book'); } catch (e) {}
+    }
+    // fallback to URL params if no sessionStorage payload
+    if (!book) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('bookId') || params.has('title')) {
+        book = { id: params.get('bookId') || null, titulo: params.get('title') || '' };
+      }
+    }
+
+    const elementoEl = document.getElementById('elementoPrestado');
+    const tipoEl = document.getElementById('tipoPrestamo');
+    const fechaPrestEl = document.getElementById('fechaPrestamo');
+    const fechaDevEl = document.getElementById('fechaDevolucion');
+
+    if (book) {
+      if (elementoEl && (elementoEl.value === '' || elementoEl.value === elementoEl.placeholder)) {
+        elementoEl.value = book.titulo || book.title || '';
+      }
+
+      if (tipoEl) {
+        // prefer explicit option value 'Libro' if present
+        try {
+          if ([...tipoEl.options].some(o => (o.value || o.text) === 'Libro')) {
+            tipoEl.value = 'Libro';
+          }
+        } catch (e) {}
+      }
+
+      // populate hidden fields for backend
+      try {
+        const loanBookId = document.getElementById('loanBookId');
+        const loanISBN = document.getElementById('loanBookISBN');
+        if (loanBookId && (book.id || book.ID || book.idLibro)) loanBookId.value = book.id || book.ID || book.idLibro || '';
+        if (loanISBN && (book.ISBN || book.isbn)) loanISBN.value = book.ISBN || book.isbn || '';
+      } catch (e) {}
+    }
+
+    // If dates are empty, set sensible defaults: today and +14 days
+    function fmt(d) { return d.toISOString().slice(0,10); }
+    const today = new Date();
+    if (fechaPrestEl && !fechaPrestEl.value) fechaPrestEl.value = fmt(today);
+    if (fechaDevEl && !fechaDevEl.value) {
+      const dd = new Date(today);
+      dd.setDate(dd.getDate() + 14);
+      fechaDevEl.value = fmt(dd);
+    }
+
+    // Attach clamping listeners to cantidad inputs so the spinner or typing
+    // never allows values above the configured `max` attribute.
+    try {
+      const mainCant = document.getElementById('cantidadPrestamo');
+      if (mainCant) {
+        mainCant.addEventListener('input', function () { clampNumberInputToMax(mainCant); });
+        mainCant.addEventListener('change', function () { clampNumberInputToMax(mainCant); });
+        mainCant.addEventListener('keydown', function (ev) {
+          try {
+            const maxAttr = mainCant.getAttribute('max'); if (maxAttr == null) return;
+            const max = Number(maxAttr); const val = Number(mainCant.value) || 0;
+            if (!isFinite(max)) return;
+            if ((ev.key === 'ArrowUp' || ev.key === 'PageUp') && val >= max) ev.preventDefault();
+          } catch (e) {}
+        });
+        // prevent wheel from changing value beyond max
+        mainCant.addEventListener('wheel', function (ev) { try { const maxAttr = mainCant.getAttribute('max'); if (maxAttr == null) return; const max = Number(maxAttr); const val = Number(mainCant.value) || 0; if (val >= max) ev.preventDefault(); } catch (e) {} });
+      }
+      const mCant = document.getElementById('mCantidadPrestamo');
+      if (mCant) {
+        mCant.addEventListener('input', function () { clampNumberInputToMax(mCant); });
+        mCant.addEventListener('change', function () { clampNumberInputToMax(mCant); });
+        mCant.addEventListener('keydown', function (ev) {
+          try {
+            const maxAttr = mCant.getAttribute('max'); if (maxAttr == null) return;
+            const max = Number(maxAttr); const val = Number(mCant.value) || 0;
+            if (!isFinite(max)) return;
+            if ((ev.key === 'ArrowUp' || ev.key === 'PageUp') && val >= max) ev.preventDefault();
+          } catch (e) {}
+        });
+        mCant.addEventListener('wheel', function (ev) { try { const maxAttr = mCant.getAttribute('max'); if (maxAttr == null) return; const max = Number(maxAttr); const val = Number(mCant.value) || 0; if (val >= max) ev.preventDefault(); } catch (e) {} });
+      }
+    } catch (e) { /* ignore */ }
+
+    const suggestionsEl = document.getElementById('bookSuggestions');
+    const availabilityEl = document.getElementById('bookAvailability');
+
+    function escapeHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    if (elementoEl) {
+      elementoEl.addEventListener('input', function (ev) {
+        const q = (this.value || '').trim().toLowerCase();
+        try { document.getElementById('loanBookId').value = ''; } catch(e){}
+        if (!q) { if (suggestionsEl) suggestionsEl.classList.add('d-none'); if (availabilityEl) availabilityEl.textContent = ''; return; }
+        const matches = BOOKS_CACHE.filter(b => ((b.titulo || b.title || '') + '').toString().toLowerCase().includes(q)).slice(0, 12);
+        if (!suggestionsEl) return;
+        if (!matches.length) { suggestionsEl.innerHTML = '<div class="list-group-item">No se encontraron libros</div>'; suggestionsEl.classList.remove('d-none'); return; }
+        suggestionsEl.innerHTML = matches.map(b => `\n          <button type="button" class="list-group-item list-group-item-action" data-id="${b.id || b.idLibro || ''}">\n            <div><strong>${escapeHtml(b.titulo || b.title || '')}</strong></div>\n            <small class=\"text-muted\">Disponibles: ${b.cantidadDisponible != null ? b.cantidadDisponible : '-'} · Prestados: ${b.cantidadPrestada != null ? b.cantidadPrestada : '-'}</small>\n          </button>`).join('');
+        suggestionsEl.classList.remove('d-none');
+      });
+
+      if (suggestionsEl) {
+        suggestionsEl.addEventListener('click', function (e) {
+          const btn = e.target.closest('button[data-id]');
+          if (!btn) return;
+          const id = btn.dataset.id;
+          // find book object from cache and populate form hidden id + availability
+          const bookObj = BOOKS_CACHE.find(b => String(b.id || b.idLibro) === String(id));
+          if (!bookObj) { suggestionsEl.classList.add('d-none'); return; }
+          elementoEl.value = bookObj.titulo || bookObj.title || '';
+          try { document.getElementById('loanBookId').value = bookObj.id || bookObj.idLibro || ''; } catch (e) {}
+          try {
+            if (availabilityEl) {
+              const avail = getAvailableForBook(bookObj);
+              availabilityEl.textContent = `Disponibles: ${avail != null ? avail : (bookObj.cantidadDisponible != null ? bookObj.cantidadDisponible : '-')} · Prestados: ${bookObj.cantidadPrestada != null ? bookObj.cantidadPrestada : '-'}`;
+                  // set max on cantidad input in main form according to availability
+                  try {
+                    const mainCant = document.getElementById('cantidadPrestamo');
+                    if (mainCant) {
+                      if (avail != null) {
+                        mainCant.max = String(avail);
+                        if (Number(avail) < 1) {
+                          mainCant.value = 0;
+                          mainCant.setAttribute('disabled', 'disabled');
+                        } else {
+                          mainCant.removeAttribute('disabled');
+                          if (Number(mainCant.value) > Number(avail)) mainCant.value = avail;
+                        }
+                        // enforce clamp immediately
+                        clampNumberInputToMax(mainCant);
+                      } else {
+                        // unknown availability: remove max constraint
+                        mainCant.removeAttribute('max');
+                        mainCant.removeAttribute('disabled');
+                      }
+                    }
+                  } catch (e) {
+                    /* ignore */
+                  }
+            }
+          } catch (e) { /* ignore */ }
+          suggestionsEl.classList.add('d-none');
+        });
+      }
+      document.addEventListener('click', function (e) {
+        if (!elementoEl.contains(e.target) && !(suggestionsEl && suggestionsEl.contains(e.target))) {
+          if (suggestionsEl) suggestionsEl.classList.add('d-none');
+        }
+      });
+    }
+
+  } catch (err) {
+    // non-fatal: just log and continue
+    console.warn('Error pre-filling préstamo form from loan_book', err);
+  }
+
+  // local confirm modal helper for prestamos page
+  window.showConfirmPrestamoModal = function(opts) {
+    return new Promise((resolve) => {
+      try {
+        const modal = document.getElementById('confirmModalPrestamo');
+        if (!modal) { resolve(window.confirm ? window.confirm(opts.message || '¿Confirmar?') : false); return; }
+        const msgEl = document.getElementById('confirmPrestamoMessage');
+        const titleEl = document.getElementById('confirmPrestamoTitle');
+        const okBtn = document.getElementById('confirmPrestamoOkBtn');
+        const cancelBtn = document.getElementById('confirmPrestamoCancelBtn');
+        const closeBtn = document.getElementById('confirmPrestamoClose');
+        if (msgEl) msgEl.textContent = opts.message || '¿Confirmar?';
+        if (titleEl) titleEl.textContent = opts.title || 'Confirmar acción';
+  modal.classList.remove('d-none');
+  renderLucide();
+  if (okBtn) okBtn.focus();
+
+        function cleanup() {
+          modal.classList.add('d-none');
+          okBtn && okBtn.removeEventListener('click', onOk);
+          cancelBtn && cancelBtn.removeEventListener('click', onCancel);
+          closeBtn && closeBtn.removeEventListener('click', onCancel);
+        }
+        function onOk() { cleanup(); resolve(true); }
+        function onCancel() { cleanup(); resolve(false); }
+
+        okBtn && okBtn.addEventListener('click', onOk);
+        cancelBtn && cancelBtn.addEventListener('click', onCancel);
+        closeBtn && closeBtn.addEventListener('click', onCancel);
+        modal.addEventListener('click', function bgClick(e) { if (e.target === modal) { modal.removeEventListener('click', bgClick); onCancel(); } });
+      } catch (e) { resolve(false); }
+    });
+  };
+
+  // submit handler: create prestamo and (server-side) adjust libro counts when id_libro present
+  try {
+    const form = document.getElementById('prestamoForm');
+    function showToast(message, type) {
+      const container = document.getElementById('flashContainer') || document.body;
+      const toast = document.createElement('div');
+      toast.className = `flash ${type === 'success' ? 'alert-success' : 'alert-error'}`;
+      toast.setAttribute('role', 'alert');
+      const body = document.createElement('div'); body.className = 'flash-body'; body.textContent = message; toast.appendChild(body);
+      const closeBtn = document.createElement('button'); closeBtn.type = 'button'; closeBtn.className = 'flash-close btn-close'; closeBtn.setAttribute('aria-label','Cerrar'); closeBtn.innerHTML='&times;'; toast.appendChild(closeBtn);
+      (container === document.body ? document.body : container).appendChild(toast);
+      setTimeout(() => { toast.classList.add('hide'); setTimeout(() => toast.remove(), 300); }, 2500);
+      closeBtn.addEventListener('click', () => { toast.remove(); });
+    }
+
+  // read server-side user_name from DOM data attribute to avoid Jinja in JS
+  const CURRENT_USER_NAME = (document.getElementById('currentUserData') && document.getElementById('currentUserData').dataset && document.getElementById('currentUserData').dataset.userName) || '';
+    if (form) {
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const solicitante = (document.getElementById('solicitante') && document.getElementById('solicitante').value.trim()) || CURRENT_USER_NAME || 'Usuario';
+        const tipo = document.getElementById('tipoPrestamo') ? document.getElementById('tipoPrestamo').value : 'Libro';
+        const elemento = document.getElementById('elementoPrestado') ? document.getElementById('elementoPrestado').value.trim() : '';
+        const fecha_prest = document.getElementById('fechaPrestamo') ? document.getElementById('fechaPrestamo').value : '';
+        const fecha_dev = document.getElementById('fechaDevolucion') ? document.getElementById('fechaDevolucion').value : '';
+        const estado = document.getElementById('estadoPrestamo') ? document.getElementById('estadoPrestamo').value : 'Activo';
+        const id_libro = document.getElementById('loanBookId') ? document.getElementById('loanBookId').value : '';
+        // Fall back user id to 1 (demo) when not available in session-backed users
+        let id_usuario = document.getElementById('loanUserId') ? document.getElementById('loanUserId').value : '';
+        if (!id_usuario) id_usuario = 1;
+
+        const payload = {
+          id_usuario: id_usuario,
+          solicitante: solicitante,
+          elemento_prestado: elemento,
+          tipo: tipo,
+          fecha_prestamo: fecha_prest,
+          fecha_devolucion: fecha_dev,
+          estado: estado
+        };
+        if (id_libro) payload.id_libro = parseInt(id_libro, 10);
+  // cantidad (number of copies to loan)
+  const cantidadVal = document.getElementById('cantidadPrestamo') ? parseInt(document.getElementById('cantidadPrestamo').value, 10) || 1 : 1;
+  payload.cantidad = cantidadVal;
+
+        try {
+          // If this préstamo is tied to a libro id, do a robust pre-check using both the libro record and active préstamos
+          if (id_libro) {
+            try {
+              // fetch the libro record (best-effort)
+              let lib = null;
+              try {
+                const checkRes = await fetch('/api/libros/' + id_libro, { headers: { 'Accept': 'application/json' } });
+                if (checkRes.ok) {
+                  try { lib = await checkRes.json(); } catch (e) { lib = null; }
+                }
+              } catch (e) { lib = null; }
+
+              // fetch prestamos to count active loans for this book id
+              let activeLoansForThis = 0;
+              try {
+                // avoid cached GETs which may return stale lists
+                const prestamosRes = await fetch('/api/prestamos?_=' + Date.now(), { cache: 'no-store', headers: { 'Accept': 'application/json' } });
+                if (prestamosRes.ok) {
+                  const all = await prestamosRes.json().catch(() => []);
+                  if (Array.isArray(all)) {
+                    all.forEach(p => {
+                      const estado = (p.estado || '').toString().toLowerCase();
+                      if (estado !== 'activo' && estado !== 'active') return;
+                      const idLibroFromP = p.id_libro || p.idLibro || p.libro_id || p.id_lib || p.idLibroPrestado || null;
+                      if (!idLibroFromP) return;
+                      if (String(idLibroFromP) !== String(id_libro)) return;
+                      const c = (typeof p.cantidad === 'number' && !isNaN(p.cantidad)) ? p.cantidad : (p.cantidad ? Number(p.cantidad) : 1);
+                      activeLoansForThis += (isNaN(c) ? 1 : c);
+                    });
+                  }
+                }
+              } catch (e) { /* ignore and fallback */ }
+
+              // compute total copies from available fields
+              let totalCopies = null;
+              if (lib) {
+                const nLib = lib.numeroLibros != null ? Number(lib.numeroLibros) : null;
+                const d = lib.cantidadDisponible != null ? Number(lib.cantidadDisponible) : null;
+                const p = lib.cantidadPrestada != null ? Number(lib.cantidadPrestada) : null;
+                const copies = lib.copies != null ? Number(lib.copies) : null;
+                // prefer explicit numeroLibros when present
+                if (!isNaN(nLib) && nLib != null) totalCopies = nLib;
+                else if (!isNaN(d) && !isNaN(p) && d != null && p != null) totalCopies = d + p;
+                else if (!isNaN(copies) && copies != null) totalCopies = copies;
+                else totalCopies = null;
+              }
+
+              // derive available by subtracting active loans from totalCopies when possible
+              if (totalCopies != null) {
+                const available = Math.max(0, Number(totalCopies) - Number(activeLoansForThis));
+                if (Number(cantidadVal) > available) {
+                  showToast(`No quedan ejemplares disponibles (disponibles: ${available}, préstamos activos: ${activeLoansForThis})`, 'error');
+                  return;
+                }
+              } else if (lib && lib.cantidadDisponible != null) {
+                // fallback: use cantidadDisponible when totalCopies unknown
+                const availField = Number(lib.cantidadDisponible);
+                if (!isNaN(availField) && Number(cantidadVal) > availField) {
+                  showToast('No quedan ejemplares disponibles', 'error');
+                  return;
+                }
+              } else {
+                // unknown totals: still allow submit and let server validate, but warn in console
+                console.warn('No se pudo determinar total de ejemplares para pre-check, enviando al servidor para validación');
+              }
+
+            } catch (e) { console.warn('Pre-check de disponibilidad falló, se continuará y el servidor validará', e); }
+          }
+
+          // Final clamp: ensure we never send a cantidad greater than availability
+          try {
+            if (payload.id_libro) {
+              try {
+                // find selected book from cache
+                const bookObj = BOOKS_CACHE.find(b => String(b.id || b.idLibro) === String(payload.id_libro));
+                let avail = null;
+                if (bookObj) {
+                  await loadPrestamosCache(); // refresh loans map
+                  avail = getAvailableForBook(bookObj);
+                }
+                if (avail != null) {
+                  const allowed = Number(avail);
+                  if (Number(payload.cantidad) > allowed) {
+                    try { if (typeof showToast === 'function') showToast(`Cantidad ajustada a la disponibilidad (${allowed})`, 'error'); } catch(e){}
+                    payload.cantidad = allowed;
+                    // also reflect in the input so user sees the change
+                    try { document.getElementById('cantidadPrestamo').value = String(payload.cantidad); } catch(e){}
+                  }
+                }
+              } catch (e) { /* ignore */ }
+            }
+          } catch (e) { /* ignore */ }
+
+          const res = await fetch('/api/prestamos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          // Try to parse JSON body, otherwise fallback to text
+          let parsed = null;
+          try { parsed = await res.json(); } catch (e) {
+            try { parsed = await res.text(); } catch (e2) { parsed = null; }
+          }
+
+          if (!res.ok) {
+            let msg = 'Error creando préstamo';
+            if (parsed) {
+              if (typeof parsed === 'string' && parsed.trim()) msg = parsed;
+              else if (parsed.error) msg = parsed.error;
+              else if (parsed.detail) msg = parsed.detail;
+              else if (parsed.message) msg = parsed.message;
+            }
+            showToast(msg, 'error');
+            return;
+          }
+
+          showToast('Préstamo creado correctamente', 'success');
+          // Refresh caches and the prestamos table in-place and keep the user on the same page
+          let refreshedItems = null;
+          try { await loadPrestamosCache(); } catch (e) {}
+          try { await loadBooksCache(); } catch (e) {}
+          try {
+            const loader = (typeof window.loadPrestamos === 'function') ? window.loadPrestamos : (typeof loadPrestamos === 'function' ? loadPrestamos : null);
+            if (loader) refreshedItems = await loader();
+          } catch (e) { /* ignore refresh errors */ }
+          // highlight the newly created row when possible. If server didn't return id in POST response,
+          // fallback to the last item returned by the refreshed list (common when API only returns 201).
+          try {
+            let newId = parsed && (parsed.id || parsed.ID || parsed.insertedId || (parsed.prestamo && parsed.prestamo.id));
+            if (!newId && Array.isArray(refreshedItems) && refreshedItems.length) {
+              newId = refreshedItems[refreshedItems.length - 1].id;
+            }
+            if (newId) {
+              try {
+                sessionStorage.setItem('lastCreatedPrestamo', JSON.stringify({ id: String(newId), ts: Date.now() }));
+                // auto-clear after short TTL to avoid re-highlighting on manual reloads
+                setTimeout(() => { try { sessionStorage.removeItem('lastCreatedPrestamo'); } catch (e) {} }, 3500);
+              } catch (e) {}
+              if (typeof window.highlightRowById === 'function') window.highlightRowById(newId);
+            }
+          } catch (e) {}
+          // reset the form so it's ready for another entry
+          try { form.reset(); } catch (e) { /* ignore form reset errors */ }
+        } catch (err) {
+          console.error('Error enviando préstamo', err);
+          showToast('Error de red al crear préstamo', 'error');
+        }
+      });
+    }
+  } catch (err) { console.warn('submit handler init failed', err); }
+  
+  // --- Render listado de prestamos ---
+  try {
+    const tbody = document.querySelector('table.table tbody');
+    async function loadPrestamos() {
+      if (!tbody) return;
+      try {
+  const res = await fetch('/api/prestamos?_=' + Date.now(), { cache: 'no-store' });
+          if (!res.ok) {
+          console.warn('Failed loading prestamos list', res.status);
+          tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">No se pudieron cargar los préstamos</td></tr>';
+          return;
+        }
+  const items = await res.json();
+  try { console.debug('loadPrestamos: received', Array.isArray(items) ? items.length : typeof items, 'items'); if (Array.isArray(items)) console.debug('loadPrestamos ids:', items.slice(0,10).map(x => x && x.id)); } catch(e){}
+        if (!Array.isArray(items) || items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">No hay préstamos registrados</td></tr>';
+          return;
+        }
+
+  tbody.innerHTML = items.map(p => {
+          const fechaP = p.fecha_prestamo ? p.fecha_prestamo.slice(0,10) : '';
+          const fechaD = p.fecha_devolucion ? p.fecha_devolucion.slice(0,10) : '';
+            // Actions: view / edit only (delete removed)
+            // determine user role from DOM data attribute
+            const role = (document.getElementById('currentUserData') && document.getElementById('currentUserData').dataset && document.getElementById('currentUserData').dataset.userRole) || '';
+            let actions = '';
+            // icon-only buttons (styled with .btn-icon). Keep semantic event classes so handlers still work.
+            const viewBtn = `<button class="btn-icon btn-ver" data-id="${p.id}" title="Ver"><i data-lucide="eye"></i></button>`;
+            if (role && (role.toLowerCase() === 'administrador' || role.toLowerCase() === 'admin')) {
+              // admins can view and edit, but not delete
+              actions = `<div class="btn-group" role="group" aria-label="Acciones">
+                ${viewBtn}
+                <button class="btn-icon btn-editar" data-id="${p.id}" title="Editar"><i data-lucide="edit-3"></i></button>
+              </div>`;
+            } else {
+              // non-admins see only view
+              actions = `<div class="btn-group" role="group" aria-label="Acciones">${viewBtn}</div>`;
+            }
+          return `
+            <tr class="text-center" data-id="${p.id}">
+              <td>${p.id}</td>
+              <td>${(p.solicitante || '')}</td>
+              <td>${(p.elemento_prestado || '')}</td>
+              <td>${(p.tipo || '')}</td>
+              <td>${fechaP}</td>
+              <td>${fechaD}</td>
+              <td>${p.cantidad != null ? p.cantidad : 1}</td>
+              <td>${(p.estado || '')}</td>
+              <td>${actions}</td>
+            </tr>`;
+        }).join('');
+
+    // After inserting icons into the DOM, render Lucide icons
+    try {
+       console.debug('loadPrestamos: rendered DOM rows:', (tbody.querySelectorAll('tr') || []).length, 'expected items:', items.length, 'lastItemId:', (items.length ? items[items.length-1] && items[items.length-1].id : null));
+    } catch(e){}
+      renderLucide();
+
+      // return the parsed items so callers can make decisions (e.g., fallback highlight)
+      // If a prestamo id was stored by a prior submit (race or failed immediate highlight), highlight it now and clear the marker.
+      // Only perform the highlight if the stored timestamp is recent to avoid re-highlighting after full page reloads.
+      try {
+        const raw = sessionStorage.getItem('lastCreatedPrestamo');
+        if (raw) {
+          try {
+            const obj = JSON.parse(raw);
+            const id = obj && obj.id ? String(obj.id) : null;
+            const ts = obj && obj.ts ? Number(obj.ts) : 0;
+            const age = Date.now() - ts;
+            // detect whether this page load is a full reload (F5) and avoid highlighting in that case
+            let isReload = false;
+            try {
+              const nav = (performance && typeof performance.getEntriesByType === 'function') ? performance.getEntriesByType('navigation') : null;
+              if (nav && nav.length) {
+                isReload = (nav[0].type === 'reload');
+              } else if (performance && performance.navigation && typeof performance.navigation.type === 'number') {
+                isReload = (performance.navigation.type === 1); // TYPE_RELOAD
+              }
+            } catch (e) { /* ignore performance API errors */ }
+
+            // only highlight when not a manual reload and when created very recently
+            if (!isReload && id && !isNaN(age) && age >= 0 && age < 3000) {
+              try { if (typeof window.highlightRowById === 'function') window.highlightRowById(id); } catch (e) { console.debug('loadPrestamos: highlight via sessionStorage failed', e); }
+            }
+          } catch (e) { /* ignore parse errors */ }
+          try { sessionStorage.removeItem('lastCreatedPrestamo'); } catch (e) {}
+        }
+  } catch (e) { /* ignore storage errors */ }
+
+      // Expose loader globally so code in earlier blocks (submit handlers) can always call it
+  try { window.loadPrestamos = loadPrestamos; } catch (e) { /* ignore */ }
+
+        // highlightRowById is defined globally (window.highlightRowById)
+
+        // Deletion of préstamos has been removed from the UI by design.
+
+        // Edit button: open edit modal pre-filled with prestamo
+        function openPrestamoModal() {
+          const modal = document.getElementById('prestamoModal');
+          if (!modal) return;
+          modal.classList.remove('d-none');
+    renderLucide();
+        }
+        function closePrestamoModal() {
+          const modal = document.getElementById('prestamoModal');
+          if (!modal) return;
+          modal.classList.add('d-none');
+          // ensure modal inputs are enabled again and save button visible for next use
+          const inputs = document.querySelectorAll('#prestamoModalForm input, #prestamoModalForm select, #prestamoModalForm textarea');
+          inputs.forEach(i => i.removeAttribute('disabled'));
+          const saveBtn = document.getElementById('mBtnGuardar'); if (saveBtn) saveBtn.style.display = '';
+        }
+        // wire modal close buttons
+        try {
+          const btnClose = document.getElementById('btnCerrarPrestamoModal');
+          if (btnClose) btnClose.addEventListener('click', closePrestamoModal);
+          const mCancel = document.getElementById('mBtnCancelar');
+          if (mCancel) mCancel.addEventListener('click', closePrestamoModal);
+        } catch (e) {}
+
+        // modal submit: perform PUT when id present
+        try {
+          const modalForm = document.getElementById('prestamoModalForm');
+          if (modalForm) {
+            modalForm.addEventListener('submit', async function (ev) {
+              ev.preventDefault();
+              // Validate that if a book title was typed, a proper book id is selected or resolvable.
+              const mElementoVal = (document.getElementById('mElementoPrestado') && document.getElementById('mElementoPrestado').value || '').trim();
+              const mLoanBookIdEl = document.getElementById('mLoanBookId');
+              // ensure books cache is ready
+              try { if (!Array.isArray(BOOKS_CACHE) || BOOKS_CACHE.length === 0) await loadBooksCache(); } catch(e){}
+              if (mElementoVal) {
+                const selectedId = mLoanBookIdEl ? mLoanBookIdEl.value : '';
+                if (!selectedId) {
+                  // try to auto-resolve exact single match (case-insensitive)
+                  const matches = BOOKS_CACHE.filter(b => ((b.titulo || b.title || '') + '').toLowerCase() === mElementoVal.toLowerCase());
+                  if (matches.length === 1) {
+                    try { if (mLoanBookIdEl) mLoanBookIdEl.value = matches[0].id || matches[0].idLibro || ''; } catch(e){}
+                  } else {
+                    // not uniquely resolved — require explicit selection from suggestions
+                    try { if (typeof showToast === 'function') showToast('Seleccione un libro válido desde la lista de sugerencias antes de guardar.', 'error'); else alert('Seleccione un libro válido desde la lista de sugerencias antes de guardar.'); } catch(e){ alert('Seleccione un libro válido desde la lista de sugerencias antes de guardar.'); }
+                    return;
+                  }
+                }
+              }
+              const id = document.getElementById('mPrestamoId').value || '';
+              const payload = {
+                id_usuario: document.getElementById('loanUserId') ? document.getElementById('loanUserId').value : 1,
+                solicitante: document.getElementById('mSolicitante').value.trim(),
+                elemento_prestado: mElementoVal,
+                tipo: document.getElementById('mTipoPrestamo').value,
+                fecha_prestamo: document.getElementById('mFechaPrestamo').value,
+                fecha_devolucion: document.getElementById('mFechaDevolucion').value,
+                // Estado is managed by Devoluciones; do not change it here
+                cantidad: parseInt(document.getElementById('mCantidadPrestamo').value, 10) || 1
+              };
+                // include book id when present (allows changing which book is linked to this préstamo)
+                try {
+                  const mIdLibroVal = mLoanBookIdEl ? mLoanBookIdEl.value : '';
+                  if (mIdLibroVal) payload.id_libro = parseInt(mIdLibroVal, 10);
+                } catch (e) {}
+              try {
+                let url = '/api/prestamos';
+                let method = 'POST';
+                if (id) { url = '/api/prestamos/' + id; method = 'PUT'; }
+                // Final clamp for modal: ensure cantidad does not exceed allowed maximum
+                try {
+                  const mIdLibroVal = document.getElementById('mLoanBookId') ? document.getElementById('mLoanBookId').value : '';
+                  let avail = null;
+                  if (mIdLibroVal) {
+                    try {
+                      if (!Array.isArray(BOOKS_CACHE) || BOOKS_CACHE.length === 0) await loadBooksCache();
+                      await loadPrestamosCache();
+                      const bookObj = BOOKS_CACHE.find(b => String(b.id || b.idLibro) === String(mIdLibroVal));
+                      if (bookObj) avail = getAvailableForBook(bookObj);
+                      // if editing existing préstamo we allowed current quantity plus avail when setting max
+                      if (id) {
+                        const current = Number(document.getElementById('mCantidadPrestamo').value) || 0;
+                        if (avail != null) {
+                          // allowed max when editing = current + avail (we already set this on open)
+                          const allowedMax = Number(avail) + (isNaN(current) ? 0 : Number(current));
+                          if (Number(payload.cantidad) > allowedMax) {
+                            try { if (typeof showToast === 'function') showToast(`Cantidad ajustada a la disponibilidad (${allowedMax})`, 'error'); } catch(e){}
+                            payload.cantidad = allowedMax;
+                            try { document.getElementById('mCantidadPrestamo').value = String(payload.cantidad); } catch(e){}
+                          }
+                        }
+                      } else {
+                        if (avail != null && Number(payload.cantidad) > Number(avail)) {
+                          try { if (typeof showToast === 'function') showToast(`Cantidad ajustada a la disponibilidad (${avail})`, 'error'); } catch(e){}
+                          payload.cantidad = Number(avail);
+                          try { document.getElementById('mCantidadPrestamo').value = String(payload.cantidad); } catch(e){}
+                        }
+                      }
+                    } catch (e) { /* ignore */ }
+                  }
+                } catch (e) { /* ignore */ }
+
+                // append cache-busting param to ensure we don't get stale responses from intermediaries
+                const fetchUrl = url + (url.indexOf('?') === -1 ? '?_=' + Date.now() : '&_=' + Date.now());
+                const r = await fetch(fetchUrl, {
+                  method: method,
+                  cache: 'no-store',
+                  headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                  body: JSON.stringify(payload)
+                });
+                if (!r.ok) {
+                  const b = await r.json().catch(()=>null);
+                  try { if (typeof showToast === 'function') showToast((b && (b.error||b.detail)) || 'Error guardando préstamo', 'error'); else alert((b && (b.error||b.detail)) || 'Error guardando préstamo'); } catch(e) { alert((b && (b.error||b.detail)) || 'Error guardando préstamo'); }
+                  return;
+                }
+                // read created/updated resource id from response (if any)
+                let respBody = null;
+                try { respBody = await r.json().catch(()=>null); } catch (e) { respBody = null; }
+                // provide clear user feedback
+                try {
+                  if (typeof showToast === 'function') showToast('Préstamo actualizado correctamente', 'success');
+                } catch (e) { /* fallback: ignore */ }
+                // if server returned a body, and cantidad differs from what we sent, show an informational warning
+                try {
+                  const sentCantidad = payload && payload.cantidad != null ? Number(payload.cantidad) : null;
+                  const returnedCantidad = respBody && (respBody.cantidad != null ? Number(respBody.cantidad) : null);
+                  if (sentCantidad != null && returnedCantidad != null && Number.isFinite(sentCantidad) && Number.isFinite(returnedCantidad) && sentCantidad !== returnedCantidad) {
+                    try { if (typeof showToast === 'function') showToast(`Advertencia: servidor devolvió cantidad=${returnedCantidad} (enviada=${sentCantidad})`, 'error'); } catch(e) {}
+                  }
+                } catch (e) { console.debug('cantidad comparison failed', e); }
+                closePrestamoModal();
+                // refresh caches and table; use returned items as fallback to determine affected id
+                let refreshedItemsModal = null;
+                try { await loadPrestamosCache(); } catch (e) {}
+                try { await loadBooksCache(); } catch (e) {}
+                try {
+                  const loaderModal = (typeof window.loadPrestamos === 'function') ? window.loadPrestamos : (typeof loadPrestamos === 'function' ? loadPrestamos : null);
+                  if (loaderModal) refreshedItemsModal = await loaderModal();
+                } catch (e) {}
+                // highlight the affected row (prefer server-returned id, else use last item from refreshed list or modal id variable)
+                try {
+                  let returnedId = respBody && (respBody.id || respBody.ID || respBody.insertedId || (respBody.prestamo && respBody.prestamo.id));
+                  if (!returnedId && Array.isArray(refreshedItemsModal) && refreshedItemsModal.length) returnedId = refreshedItemsModal[refreshedItemsModal.length - 1].id;
+                  if (returnedId || id) {
+                    try {
+                      sessionStorage.setItem('lastCreatedPrestamo', JSON.stringify({ id: String(returnedId || id), ts: Date.now() }));
+                      // auto-clear to avoid re-highlighting when user manually reloads later
+                      setTimeout(() => { try { sessionStorage.removeItem('lastCreatedPrestamo'); } catch (e) {} }, 3500);
+                    } catch (e) {}
+                    try { if (typeof window.highlightRowById === 'function') window.highlightRowById(returnedId || id); } catch (e) {}
+                  }
+                } catch (e) {}
+              } catch (err) {
+                console.error('modal submit failed', err);
+                alert('Error guardando préstamo');
+              }
+            });
+          }
+        } catch (e) { console.warn('modal submit wiring failed', e); }
+
+        // wire editar buttons to open modal and fill values
+        [...tbody.querySelectorAll('.btn-editar')].forEach(btn => {
+            btn.addEventListener('click', async function (e) {
+            const id = this.dataset.id;
+            if (!id) return;
+            try {
+              const r = await fetch('/api/prestamos/' + id + '?_=' + Date.now(), { cache: 'no-store' });
+              if (!r.ok) return;
+              const p = await r.json();
+              document.getElementById('mPrestamoId').value = p.id || '';
+              document.getElementById('mSolicitante').value = p.solicitante || '';
+              document.getElementById('mTipoPrestamo').value = p.tipo || 'Libro';
+              document.getElementById('mElementoPrestado').value = p.elemento_prestado || '';
+              document.getElementById('mFechaPrestamo').value = (p.fecha_prestamo||'').slice(0,10);
+              document.getElementById('mFechaDevolucion').value = (p.fecha_devolucion||'').slice(0,10);
+              // Estado is managed in Devoluciones module; modal is for viewing/editing core fields only
+              // document.getElementById('mEstadoPrestamo').value = p.estado || 'Activo';
+              document.getElementById('mCantidadPrestamo').value = p.cantidad || 1;
+              // set linked book id (if present) and attempt to show book title + availability
+              try {
+                const mLoanBookIdEl = document.getElementById('mLoanBookId');
+                if (mLoanBookIdEl) mLoanBookIdEl.value = p.id_libro || p.idLibro || p.libro_id || '';
+                // refresh loans map so availability is up-to-date
+                await loadPrestamosCache();
+                  	// ensure books cache available before attempting to find the book
+                  	try { if (!Array.isArray(BOOKS_CACHE) || BOOKS_CACHE.length === 0) await loadBooksCache(); } catch(e){}
+                if (mLoanBookIdEl && mLoanBookIdEl.value) {
+                  const bookObj = BOOKS_CACHE.find(b => String(b.id || b.idLibro) === String(mLoanBookIdEl.value));
+                  if (bookObj) {
+                    document.getElementById('mElementoPrestado').value = bookObj.titulo || bookObj.title || (p.elemento_prestado || '');
+                    const avail = getAvailableForBook(bookObj);
+                    const mAvailEl = document.getElementById('mBookAvailability');
+                    if (mAvailEl) mAvailEl.textContent = `Disponibles: ${avail != null ? avail : (bookObj.cantidadDisponible != null ? bookObj.cantidadDisponible : '-')} · Prestados: ${bookObj.cantidadPrestada != null ? bookObj.cantidadPrestada : '-'}`;
+                      // Set modal cantidad max. When editing an existing préstamo we allow the current cantidad
+                      // plus the currently available copies so the user can increase up to the true max.
+                      try {
+                        const mCant = document.getElementById('mCantidadPrestamo');
+                        if (mCant) {
+                          const current = Number(p.cantidad || 1);
+                          if (avail != null) {
+                            const allowedMax = Number(avail) + (isNaN(current) ? 0 : Number(current));
+                          mCant.max = String(allowedMax);
+                          if (allowedMax < 1) {
+                            mCant.value = 0;
+                            mCant.setAttribute('disabled', 'disabled');
+                          } else {
+                            mCant.removeAttribute('disabled');
+                            if (Number(mCant.value) > allowedMax) mCant.value = allowedMax;
+                          }
+                          try { clampNumberInputToMax(mCant); } catch (e) {}
+                          } else {
+                            mCant.removeAttribute('max');
+                            mCant.removeAttribute('disabled');
+                          }
+                        }
+                      } catch (e) { /* ignore */ }
+                  }
+                }
+              } catch (e) { /* ignore */ }
+              // ensure inputs are enabled for editing and save button visible
+              const inputsToEnable = document.querySelectorAll('#prestamoModalForm input, #prestamoModalForm select, #prestamoModalForm textarea');
+              inputsToEnable.forEach(i => i.removeAttribute('disabled'));
+              const saveBtn = document.getElementById('mBtnGuardar'); if (saveBtn) saveBtn.style.display = '';
+              // If the préstamo is already returned, prevent editing of cantidad even when opening in edit mode
+              try {
+                const est = (p.estado || '').toString().toLowerCase();
+                if (est === 'devuelto' || est === 'returned') {
+                  const mCant = document.getElementById('mCantidadPrestamo');
+                  if (mCant) mCant.setAttribute('disabled', 'disabled');
+                }
+              } catch (e) { /* ignore */ }
+              openPrestamoModal();
+            } catch (err) { console.error('failed to load prestamo for modal', err); }
+          });
+        });
+
+        // --- Modal autocomplete for elemento prestado (allows changing book when editing) ---
+        try {
+          const mElementoEl = document.getElementById('mElementoPrestado');
+          const mSuggestionsEl = document.getElementById('mBookSuggestions');
+          const mAvailabilityEl = document.getElementById('mBookAvailability');
+          if (mElementoEl) {
+            mElementoEl.addEventListener('input', async function (ev) {
+              const q = (this.value || '').trim().toLowerCase();
+              try { document.getElementById('mLoanBookId').value = ''; } catch (e) {}
+              if (!q) { if (mSuggestionsEl) mSuggestionsEl.classList.add('d-none'); if (mAvailabilityEl) mAvailabilityEl.textContent = ''; return; }
+              // ensure books cache is loaded before searching
+              try { if (!Array.isArray(BOOKS_CACHE) || BOOKS_CACHE.length === 0) await loadBooksCache(); } catch(e){}
+              // keep loans map fresh for availability calculations
+              await loadPrestamosCache();
+              const matches = BOOKS_CACHE.filter(b => (((b.titulo || b.title || '') + '').toLowerCase().includes(q)));
+              const candidates = matches.map(b => ({ b: b, avail: getAvailableForBook(b) })).filter(x => (x.avail != null && x.avail > 0));
+              if (!mSuggestionsEl) return;
+              if (!candidates.length) { mSuggestionsEl.innerHTML = '<div class="list-group-item">No hay ejemplares disponibles</div>'; mSuggestionsEl.classList.remove('d-none'); return; }
+              mSuggestionsEl.innerHTML = candidates.slice(0,12).map(({b,avail}) => `\n          <button type="button" class="list-group-item list-group-item-action" data-id="${b.id || b.idLibro || ''}">\n            <div><strong>${escapeHtml(b.titulo || b.title || '')}</strong></div>\n            <small class=\"text-muted\">Disponibles: ${avail} · Prestados: ${b.cantidadPrestada != null ? b.cantidadPrestada : '-'}</small>\n          </button>`).join('');
+              mSuggestionsEl.classList.remove('d-none');
+            });
+
+            if (mSuggestionsEl) {
+              mSuggestionsEl.addEventListener('click', function (e) {
+                const btn = e.target.closest('button[data-id]');
+                if (!btn) return;
+                const id = btn.dataset.id;
+                const bookObj = BOOKS_CACHE.find(b => String(b.id || b.idLibro) === String(id));
+                if (!bookObj) return;
+                mElementoEl.value = bookObj.titulo || bookObj.title || '';
+                try { document.getElementById('mLoanBookId').value = bookObj.id || bookObj.idLibro || ''; } catch (e) {}
+                const avail = getAvailableForBook(bookObj);
+                if (mAvailabilityEl) mAvailabilityEl.textContent = `Disponibles: ${avail != null ? avail : (bookObj.cantidadDisponible != null ? bookObj.cantidadDisponible : '-')} · Prestados: ${bookObj.cantidadPrestada != null ? bookObj.cantidadPrestada : '-'}`;
+                // set modal cantidad max based on availability for NEWLY selected book (when editing)
+                try {
+                  const mCant = document.getElementById('mCantidadPrestamo');
+                  if (mCant) {
+                    if (avail != null) {
+                      mCant.max = String(avail);
+                      if (Number(avail) < 1) {
+                        mCant.value = 0;
+                        mCant.setAttribute('disabled', 'disabled');
+                      } else {
+                        mCant.removeAttribute('disabled');
+                        if (Number(mCant.value) > Number(avail)) mCant.value = avail;
+                      }
+                      try { clampNumberInputToMax(mCant); } catch (e) {}
+                    } else {
+                      mCant.removeAttribute('max');
+                      mCant.removeAttribute('disabled');
+                    }
+                  }
+                } catch (e) { /* ignore */ }
+                mSuggestionsEl.classList.add('d-none');
+              });
+            }
+
+            // hide suggestions when clicking outside modal input
+            document.addEventListener('click', function (e) {
+              if (!mElementoEl.contains(e.target) && !(mSuggestionsEl && mSuggestionsEl.contains(e.target))) {
+                if (mSuggestionsEl) mSuggestionsEl.classList.add('d-none');
+              }
+            });
+          }
+        } catch (e) { console.warn('modal autocomplete init failed', e); }
+
+        // wire view-only buttons to open modal in read-only mode
+        [...tbody.querySelectorAll('.btn-ver')].forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            const id = this.dataset.id;
+            if (!id) return;
+            try {
+              const r = await fetch('/api/prestamos/' + id + '?_=' + Date.now(), { cache: 'no-store' });
+              if (!r.ok) return;
+              const p = await r.json();
+              // fill modal fields
+              document.getElementById('mPrestamoId').value = p.id || '';
+              document.getElementById('mSolicitante').value = p.solicitante || '';
+              document.getElementById('mTipoPrestamo').value = p.tipo || 'Libro';
+              document.getElementById('mElementoPrestado').value = p.elemento_prestado || '';
+              document.getElementById('mFechaPrestamo').value = (p.fecha_prestamo||'').slice(0,10);
+              document.getElementById('mFechaDevolucion').value = (p.fecha_devolucion||'').slice(0,10);
+              document.getElementById('mCantidadPrestamo').value = p.cantidad || 1;
+              // disable inputs for view-only
+              const inputs = document.querySelectorAll('#prestamoModalForm input, #prestamoModalForm select, #prestamoModalForm textarea');
+              inputs.forEach(i => i.setAttribute('disabled', 'disabled'));
+              // hide save button on view-only
+              const saveBtn = document.getElementById('mBtnGuardar'); if (saveBtn) saveBtn.style.display = 'none';
+              openPrestamoModal();
+            } catch (err) { console.error('failed to load prestamo for view', err); }
+          });
+        });
+
+      
+      return items;
+      } catch (err) {
+        console.error('Error rendering prestamos', err);
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Error cargando préstamos</td></tr>';
+      }
+    }
+
+    // initial load
+    loadPrestamos();
+
+    // Safety: attach a direct listener to the modal Cancel button so it always
+    // hides the modal and restores UI state even if global wiring missed it.
+    try {
+      const mBtnCancel = document.getElementById('mBtnCancelar');
+      if (mBtnCancel) {
+        mBtnCancel.addEventListener('click', function () {
+          try { const modal = document.getElementById('prestamoModal'); if (modal) modal.classList.add('d-none'); } catch (e) {}
+          try { document.documentElement.classList.remove('modal-active'); } catch (e) {}
+          try { document.body.classList.remove('no-scroll'); } catch (e) {}
+          try { const navbar = document.querySelector('.navbar'); if (navbar) navbar.removeAttribute('aria-hidden'); } catch (e) {}
+          try { const footer = document.querySelector('footer, .footer'); if (footer) footer.removeAttribute('aria-hidden'); } catch (e) {}
+        });
+      }
+    } catch (e) { /* ignore */ }
+
+    // Delegated handlers: ensure action buttons added dynamically open the modal.
+    // The original code attempted to attach listeners after rendering but some
+    // of that wiring was placed after an early `return` and wasn't executed.
+    // Use delegation so clicks on dynamically-inserted `.btn-ver` / `.btn-editar`
+    // will always be handled.
+    try {
+      const delegatedTbody = document.querySelector('table.table tbody');
+      if (delegatedTbody) {
+        delegatedTbody.addEventListener('click', async function (ev) {
+          try {
+            const btn = ev.target.closest('.btn-ver, .btn-editar');
+            if (!btn) return;
+            const id = btn.dataset && btn.dataset.id;
+            if (!id) return;
+            // fetch prestamo data
+            const res = await fetch('/api/prestamos/' + id + '?_=' + Date.now(), { cache: 'no-store' });
+            if (!res.ok) return;
+            const p = await res.json().catch(() => null);
+            if (!p) return;
+
+            // fill modal fields
+            try { document.getElementById('mPrestamoId').value = p.id || ''; } catch(e){}
+            try { document.getElementById('mSolicitante').value = p.solicitante || ''; } catch(e){}
+            try { document.getElementById('mTipoPrestamo').value = p.tipo || 'Libro'; } catch(e){}
+            try { document.getElementById('mElementoPrestado').value = p.elemento_prestado || ''; } catch(e){}
+            try { document.getElementById('mFechaPrestamo').value = (p.fecha_prestamo||'').slice(0,10); } catch(e){}
+            try { document.getElementById('mFechaDevolucion').value = (p.fecha_devolucion||'').slice(0,10); } catch(e){}
+            try { document.getElementById('mCantidadPrestamo').value = p.cantidad || 1; } catch(e){}
+
+            // Toggle read-only vs editable based on which button was clicked
+            const inputs = document.querySelectorAll('#prestamoModalForm input, #prestamoModalForm select, #prestamoModalForm textarea');
+            if (btn.classList.contains('btn-ver')) {
+              inputs.forEach(i => i.setAttribute('disabled', 'disabled'));
+              const saveBtn = document.getElementById('mBtnGuardar'); if (saveBtn) saveBtn.style.display = 'none';
+            } else {
+              inputs.forEach(i => i.removeAttribute('disabled'));
+              const saveBtn = document.getElementById('mBtnGuardar'); if (saveBtn) saveBtn.style.display = '';
+            }
+
+            // Additionally, always prevent editing the cantidad field when the prestamo
+            // has estado 'Devuelto' (or 'returned') regardless of role.
+            try {
+              const est = (p.estado || '').toString().toLowerCase();
+              const mCantEl = document.getElementById('mCantidadPrestamo');
+              if (est === 'devuelto' || est === 'returned') {
+                if (mCantEl) mCantEl.setAttribute('disabled', 'disabled');
+              } else {
+                // ensure enabled in non-returned cases
+                if (mCantEl) mCantEl.removeAttribute('disabled');
+              }
+            } catch (e) { /* ignore */ }
+
+            // attempt to set linked book id and availability if present
+            try {
+              const mLoanBookIdEl = document.getElementById('mLoanBookId');
+              if (mLoanBookIdEl) mLoanBookIdEl.value = p.id_libro || p.idLibro || p.libro_id || '';
+            } catch (e) {}
+
+            // show modal
+            const modalEl = document.getElementById('prestamoModal');
+            if (modalEl) {
+              modalEl.classList.remove('d-none');
+              try { if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons(); } catch(e){}
+            }
+          } catch (err) {
+            console.error('delegated handler error', err);
+          }
+        });
+      }
+    } catch (e) { console.warn('delegation wiring failed', e); }
+  } catch (err) { console.warn('prestamos render init failed', err); }
+});
+</script>
+{% endblock %}

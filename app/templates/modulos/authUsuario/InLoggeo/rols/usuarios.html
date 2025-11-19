@@ -1,0 +1,85 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<main class="container mt-4 rol-container">
+    <div class="main-content">
+        <div class="content-header">
+            <h1 class="page-title">Gestión de Usuarios</h1>
+            <button class="btn-primary-custom" id="btnAgregarUsuario">
+                <i data-lucide="user-plus" class="me-2"></i>Agregar Usuario
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th><i data-lucide="hash" class="me-1"></i>ID</th>
+                        <th><i data-lucide="user" class="me-1"></i>Nombre</th>
+                        <th><i data-lucide="mail" class="me-1"></i>Correo</th>
+                        <th><i data-lucide="shield" class="me-1"></i>Rol</th>
+                        <th><i data-lucide="activity" class="me-1"></i>Estado</th>
+                        <th><i data-lucide="settings" class="me-1"></i>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Los usuarios se cargarán dinámicamente aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Usuario -->
+    <div class="modal-overlay d-none" id="userModal">
+        <div class="modal-custom">
+            <div class="modal-header-custom">
+                <h2 class="modal-title" id="modalTitle">Agregar Usuario</h2>
+                <button class="btn-close-modal" id="btnCerrarModal"><i data-lucide="x" style="font-size:1.3em;"></i></button>
+            </div>
+            <div class="modal-body-custom">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    
+                    <div class="mb-3">
+                        <label for="userName" class="form-label"><i data-lucide="user" class="me-2"></i>Nombre completo</label>
+                        <input type="text" class="form-control" id="userName" placeholder="Juan Pérez" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label"><i data-lucide="mail" class="me-2"></i>Correo electrónico</label>
+                        <input type="email" class="form-control" id="userEmail" placeholder="ejemplo@correo.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userRole" class="form-label"><i data-lucide="shield" class="me-2"></i>Rol</label>
+                        <select class="form-control" id="userRole" required>
+                            <option value="">Selecciona un rol</option>
+                            <option value="Administrador">Administrador</option>
+                            <option value="Recepcionista">Recepcionista</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label"><i data-lucide="key" class="me-2"></i>Contraseña</label>
+                        <input type="password" class="form-control" id="userPassword" placeholder="••••••••">
+                        <small class="text-muted d-none" id="passwordHelp">Dejar vacío para mantener la contraseña actual</small>
+                    </div>
+
+                    <div class="modal-footer-custom">
+                        <button type="button" class="btn-secondary-custom" id="btnCancelar">
+                            <i data-lucide="x" class="me-2"></i>Cancelar
+                        </button>
+                        <button type="submit" class="btn-primary-custom" id="btnGuardar">
+                            <i data-lucide="save" class="me-2"></i>Guardar Usuario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/usuarios_api.js') }}"></script>
+</main>
+{% endblock %}

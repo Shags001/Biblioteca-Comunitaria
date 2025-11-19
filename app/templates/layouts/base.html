@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Biblioteca Administrativa{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Merriweather:wght@400&display=swap" rel="stylesheet">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+    {% include 'layouts/navbar.html' %} 
+    {# Flash / notificaciones flotantes (bottom-right). Renderiza mensajes enviados con flask.flash #}
+    <div id="flashContainer" class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash alert-custom {% if category == 'success' %}alert-success{% elif category == 'danger' %}alert-error{% elif category == 'warning' %}alert-warning{% else %}alert-info{% endif %}" role="alert" data-timeout="3500">
+                        <div class="flash-body">{{ message }}</div>
+                        <button type="button" class="flash-close btn-close" aria-label="Cerrar">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% block content %}
+    <main class="container-fluid section-start section-end">
+        <div style="height: 500px; border: 1px dashed gray; padding: 20px;">
+            CONTENIDO DE LA PÁGINA DE ÍNDICE
+        </div>
+    </main>
+    {% endblock %}
+    
+    {% include 'layouts/footer.html' %}
+    
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+{% block bottom_scripts %}{% endblock %}
+
+</body>
+</html>

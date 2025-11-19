@@ -1,0 +1,173 @@
+/* devoluciones.css - estilos específicos para el módulo Devoluciones
+   Basado en la versión original del módulo (Style.css en templates).
+   Usa variables definidas en base.css. Mantenerlo ligero y localizado. */
+
+:root {
+  /* Si base.css define variables, las usaremos; si no, valores por defecto */
+  --color-bg: var(--white-smoke, #F3F3F3);
+  --color-accent: var(--celadon, #AAD4AE);
+  --color-accent-2: var(--cambridge-blue, #98C39C);
+  --color-text: var(--gunmetal, #2E3440);
+  --radius: 8px;
+}
+
+/* Contenedor principal del módulo */
+.container-custom {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgba(46,52,64,0.06);
+}
+
+.titulo-principal {
+  font-family: var(--ff-primary, Poppins), sans-serif;
+  color: var(--color-text);
+  font-size: 1.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.subtitulo-seccion {
+  font-family: var(--ff-primary, Poppins), sans-serif;
+  color: var(--color-text);
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.seccion-card {
+  padding: 1rem;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fff, #fbfbfb);
+  margin-bottom: 1rem;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+
+.form-horizontal { width: 100%; }
+.form-row { display: flex; align-items: center; margin-bottom: 1.25rem; gap: 0.75rem; }
+.form-label-inline { width: 220px; font-weight: 600; color: var(--color-text); display:flex; align-items:center; }
+.form-control-inline {
+  flex: 1 1 auto;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fff;
+  color: var(--color-text);
+}
+
+.form-control-inline:focus { outline: none; box-shadow: 0 0 0 4px rgba(170,212,174,0.12); }
+
+.form-row-doble { display: flex; gap: 2rem; align-items: center; }
+.form-group-mitad { flex: 1; display: flex; align-items: center; gap: 0.75rem; }
+
+/* Within the two-column row, make labels take a fixed space and inputs a compact width
+  so date pickers look aligned and centered vertically */
+.form-row-doble .form-label-inline { width: 180px; }
+.form-row-doble .form-group-mitad .form-control-inline { max-width: 260px; }
+
+.form-buttons { display:flex; gap: 0.75rem; justify-content:flex-end; margin-top: 1.5rem; }
+.btn-principal {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+.btn-secundario {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 7px 12px;
+  border-radius: 6px;
+}
+
+/* Filtros */
+.seccion-filtros .filtros-container { display:flex; gap:1rem; flex-wrap:wrap; }
+.filtro-item { min-width: 220px; }
+
+/* Historial */
+.registro-historial { padding: 12px; border-radius:6px; background: #fff; border:1px solid rgba(0,0,0,0.03); margin-bottom:8px; display:flex; justify-content:space-between; }
+.registro-header-historial { display:flex; gap: 1rem; align-items:center; }
+.registro-titulo-historial { font-weight:700; color:var(--color-text); }
+.registro-info-text { color: rgba(46,52,64,0.7); }
+
+.badge-estado { padding: 6px 10px; border-radius: 999px; font-weight:600; font-size:0.85rem; }
+.badge-devuelto { background: #E6F6EA; color: #12723a; }
+.badge-tiempo { background: #fff7e6; color: #a67400; }
+.badge-rojo { background: #fff0f0; color:#9b1b1b; }
+
+/* Footer personalizado del módulo */
+.footer-personalizado { margin-top: 1rem; text-align:center; color: rgba(46,52,64,0.7); }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-label-inline { width: 120px; }
+  .form-row-doble { flex-direction:column; }
+}
+
+/* pequeñas mejoras de accesibilidad */
+.form-control-inline[readonly] { background: #f8f8f8; }
+
+/* Animation */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform:none; } }
+.registro-historial { animation: fadeIn 250ms ease both; }
+
+/* Notification toast specific styling (used by devoluciones module) */
+/* Position the global notifications container below the navbar when present
+   and ensure it appears above it (high z-index). We use a CSS variable
+   --navbar-height if available; otherwise default to 56px. */
+#globalNotifications {
+  position: fixed !important;
+  top: calc(var(--navbar-height, 56px) + 0.6rem) !important;
+  right: 1rem !important;
+  z-index: 1200 !important; /* higher than typical navbar */
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  pointer-events: none; /* allow clicks to pass through empty areas */
+}
+
+.devolucion-toast {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--color-text, #2E3440);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 6px 18px rgba(46,52,64,0.06);
+  pointer-events: auto; /* allow interacting with the toast itself */
+}
+
+/* Use softer, project-consistent colors (reuse badge colors used in this module) */
+.devolucion-toast.alert-success {
+  background: #E6F6EA; /* pale green */
+  color: #12723a;     /* dark green text */
+  border: 1px solid rgba(18,114,58,0.08);
+}
+.devolucion-toast.alert-warning {
+  background: #fff7e6; /* pale yellow */
+  color: #a67400;      /* darker warm text */
+  border: 1px solid rgba(166,116,0,0.08);
+}
+.devolucion-toast.alert-danger {
+  background: #fff0f0; /* pale red */
+  color: #9b1b1b;      /* dark red text */
+  border: 1px solid rgba(155,27,27,0.08);
+}
+
+/* Adjust default bootstrap alert link color inside toast */
+.devolucion-toast .alert-link { color: inherit; font-weight:700; }
+
+/* Highlight animation for newly added devolucion */
+.registro-historial.highlight-devolucion {
+  animation: highlightPulse 3s ease both;
+  border: 1px solid rgba(34,139,34,0.8);
+  box-shadow: 0 10px 30px rgba(34,139,34,0.12);
+}
+
+@keyframes highlightPulse {
+  0% { background: linear-gradient(90deg, rgba(255,250,230,1), rgba(255,255,255,1)); transform: translateY(-4px); }
+  20% { background: linear-gradient(90deg, rgba(255,250,230,0.95), rgba(255,255,255,1)); transform: none; }
+  80% { background: linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,1)); }
+  100% { background: transparent; }
+}
