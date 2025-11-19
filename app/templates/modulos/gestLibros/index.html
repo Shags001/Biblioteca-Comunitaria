@@ -3,13 +3,15 @@
 {% block title %}Gestión de Libros{% endblock %}
 
 {% block content %}
-<main class="container mt-4 rol-container">
+<main class="container mt-4 rol-container" data-user-role="{{ user_role or '' }}" data-auth="{{ 'true' if is_authenticated else 'false' }}">
     <div class="main-content">
         <div class="content-header">
             <h1 class="page-title">Gestión de Libros</h1>
+            {% if is_authenticated and user_role == 'Administrador' %}
             <button class="btn-primary-custom d-flex align-items-center" id="btnAgregarLibro">
-                <i data-lucide="plus" class="me-2"></i>Agregar Libro
+                <i data-lucide="plus" class="me-2"></i><span class="btn-label">Agregar Libro</span>
             </button>
+            {% endif %}
         </div>
         <div class="search-bar mb-3 d-flex align-items-center">
             <span class="input-group-text"><i data-lucide="search"></i></span>
@@ -27,8 +29,9 @@
                             <th><i data-lucide="tag" class="me-1"></i>Género</th>
                             <th><i data-lucide="factory" class="me-1"></i>Editorial</th>
                             <th><i data-lucide="calendar" class="me-1"></i>Año</th>
-                            <th><i data-lucide="file-text" class="me-1"></i>Páginas</th>
-                            <th><i data-lucide="layers" class="me-1"></i>Ejemplares</th>
+                            <th><i data-lucide="layers" class="me-1"></i>Libros</th>
+                            <th><i data-lucide="layers" class="me-1"></i>Disponibles</th>
+                            <th><i data-lucide="archive" class="me-1"></i>Prestados</th>
                             <th><i data-lucide="align-left" class="me-1"></i>Descripción</th>
                             <th><i data-lucide="edit-3" class="me-1"></i>Acciones</th>
                         </tr>
@@ -65,16 +68,12 @@
                             <input type="text" class="form-control" id="bookISBN" placeholder="Código ISBN">
                         </div>
                         <div class="col-12 col-md-6">
-                            <label for="bookGenre" class="form-label"><i data-lucide="tag" class="me-2"></i>Género</label>
-                            <select class="form-control" id="bookGenre" required>
-                                <option value="">Selecciona un género</option>
-                                <option value="Fantasía">Fantasía</option>
-                                <option value="Ciencia Ficción">Ciencia Ficción</option>
-                                <option value="Romance">Romance</option>
-                                <option value="Historia">Historia</option>
-                                <option value="Educativo">Educativo</option>
-                                <option value="Misterio">Misterio/Suspenso</option>
-                            </select>
+                            <label for="bookGenreInput" class="form-label"><i data-lucide="tag" class="me-2"></i>Género</label>
+                            <!-- Custom responsive genre picker: controlled by JS -->
+                            <div class="custom-select-container">
+                                <div class="custom-select-input form-control" id="bookGenreInput" tabindex="0" role="combobox" aria-expanded="false">Selecciona un género</div>
+                                <div class="custom-select-options d-none" id="bookGenreOptions" role="listbox"></div>
+                            </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="bookPublisher" class="form-label"><i data-lucide="factory" class="me-2"></i>Editorial</label>
@@ -83,10 +82,6 @@
                         <div class="col-12 col-md-6">
                             <label for="bookYear" class="form-label"><i data-lucide="calendar" class="me-2"></i>Año</label>
                             <input type="number" class="form-control" id="bookYear" placeholder="Año" min="1800" max="2025">
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label for="bookPages" class="form-label"><i data-lucide="file-text" class="me-2"></i>Número de Páginas</label>
-                            <input type="number" class="form-control" id="bookPages" placeholder="Cantidad de páginas" min="1">
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="bookCopies" class="form-label"><i data-lucide="layers" class="me-2"></i>Ejemplares</label>
@@ -106,9 +101,29 @@
                         </button>
                     </div>
                 </form>
-            </button>
             </div>
 <style>
+/* Strong override for the specific Agregar Libro button so it doesn't expand
+   to full width due to the generic .btn-primary-custom rules. We target by
+   ID and class to ensure higher specificity and use !important to override. */
+#btnAgregarLibro.btn-primary-custom {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    max-width: 160px !important;
+    min-width: 36px !important;
+    padding: 6px 10px !important;
+    font-size: 14px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+}
+#btnAgregarLibro.btn-primary-custom svg,
+#btnAgregarLibro.btn-primary-custom i[data-lucide] { width:18px !important; height:18px !important; }
+#btnAgregarLibro.btn-primary-custom .btn-label { display: inline-block; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#btnAgregarLibro.btn-primary-custom:focus { outline: 2px solid rgba(0,0,0,0.06); }
+
 @media (max-width: 768px) {
     .main-content {
         padding: 0.5rem !important;
@@ -133,219 +148,225 @@
         flex-direction: column !important;
     }
 }
+/* Styles for custom responsive genre picker */
+.custom-select-container{position:relative}
+.custom-select-input{cursor:pointer;background:#fff}
+.custom-select-options{position:absolute;left:0;right:0;z-index:2100;background:#fff;border:1px solid #ddd;border-radius:4px;margin-top:6px;box-shadow:0 6px 18px rgba(0,0,0,0.08);max-height:240px;overflow:auto}
+.custom-select-options .option{padding:8px 12px;cursor:pointer}
+.custom-select-options .option:hover{background:#f2f6f9}
+.custom-select-options .option[aria-selected="true"]{background:#e6f4ea}
+                /* Layout tweaks: expand page width for this module and let the table use more room
+                    without shrinking text/icons. We increase the container's max-width only for this
+                    page (selector targets .container.rol-container) and remove extra inner padding so
+                    the table can occupy more horizontal space. */
+                .container.rol-container { max-width: 1400px; }
+                .table-container { width: 100%; padding: 0; box-sizing: border-box; }
+                .table-responsive-custom { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 1rem; }
+                .table-custom { width: 100%; table-layout: auto; border-collapse: collapse; }
+
+            /* Basic cell sizing to avoid excessive horizontal growth */
+            .table-custom th, .table-custom td { padding: 0.9rem 0.6rem; vertical-align: top; }
+
+            /* Make action column compact and fixed-width so it doesn't push the table wide
+               Keep Descripción column behavior unchanged (wraps as before). */
+            .table-custom th:last-child, .table-custom td:last-child { width: 72px; text-align: center; white-space: nowrap; }
+            .table-custom td:last-child .btn-icon { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:8px; border:0; background:transparent; padding:0; margin:0 2px; cursor:pointer; }
+            .table-custom td:last-child .btn-icon svg { width:18px; height:18px; }
+            .table-custom td:last-child .btn-icon:hover { background: rgba(0,0,0,0.04); }
+
+            /* prevent table header icons from adding extra width */
+            .table-custom thead th i[data-lucide] { width:18px; height:18px; vertical-align:middle; }
+
+            @media (max-width: 768px) {
+                .table-container { padding: 0 0.5rem; }
+                .table-custom th, .table-custom td { padding: 0.6rem 0.4rem; font-size: 0.95rem; }
+                .table-custom th:last-child, .table-custom td:last-child { width: 64px; }
+            }
+
+/* Allow the Descripción column to wrap on small screens and break long words
+   Override any earlier 'white-space: nowrap' rules that cause horizontal scroll. */
+.table-custom td:nth-child(11), .table-custom th:nth-child(11) {
+    white-space: normal !important;
+}
+.table-custom td:nth-child(11) .desc-preview,
+.table-custom td:nth-child(11) .desc-full,
+.table-custom td:nth-child(11) > div {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important; /* hide any small horizontal scroll */
+}
+
+/* Ensure modal keeps the dropdown inside viewport on small screens */
+.modal-custom{max-width:760px}
+@media (max-width:768px){
+    .custom-select-options{max-height:180px}
+    .modal-custom{width:96vw;max-width:96vw}
+}
 </style>
+<style>
+/* Description preview: clamp to 3 lines and offer a reveal button */
+.desc-preview { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-clamp: 3; max-height: calc(1.3em * 3); }
+.desc-full { white-space: normal; }
+.show-more-btn { display:inline-block; margin-left:8px; background:transparent;border:0;color:var(--clr-gunmetal,#333);cursor:pointer;font-size:0.9rem;padding:0 }
+.show-more-btn:focus { outline:2px solid rgba(0,0,0,0.08); border-radius:4px }
+</style>
+
+<style>
+/* Mobile-specific adjustments: clamp to 2 lines and make add-book button compact */
+@media (max-width: 768px) {
+    .desc-preview { -webkit-line-clamp: 2; line-clamp: 2; max-height: calc(1.2em * 2); }
+    .show-more-btn { font-size: 0.85rem; margin-left:6px }
+}
+
+@media (max-width: 480px) {
+    /* Make the Agregar Libro button compact: icon-only on very small screens */
+    /* Use high-specificity and !important to override global .btn-primary-custom rules that set width:100% */
+    #btnAgregarLibro {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 6px 8px !important;
+        min-width: 0 !important;
+        width: auto !important;
+        height: 38px !important;
+        border-radius: 8px !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+    }
+        /* Make Agregar Libro generally smaller on all viewports (not only very small screens) */
+        #btnAgregarLibro {
+            padding: 6px 10px !important;
+            font-size: 14px !important;
+            height: 36px !important;
+            min-width: 36px !important;
+            max-width: 180px !important;
+            width: auto !important;
+        }
+        /* Truncate the label if it's too long so the button doesn't expand */
+        #btnAgregarLibro .btn-label {
+            display: inline-block;
+            max-width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+    #btnAgregarLibro i[data-lucide] { width:18px; height:18px; margin-right:0.35rem }
+    #btnAgregarLibro .btn-label { display:none !important }
+    /* Slightly reduce table cell padding on very small screens */
+    .table-custom th, .table-custom td { padding: 0.45rem 0.35rem; font-size:0.92rem }
+}
+</style>
+
+<script>
+// Fallback: if the main module didn't bind the click handler for any reason,
+// ensure the Agregar Libro button opens the modal. This is safe to run even
+// if libros.js also binds its own handler (both will run).
+(function(){
+    try {
+        const btn = document.getElementById('btnAgregarLibro');
+        const bookModal = document.getElementById('bookModal');
+        if (!btn || !bookModal) return;
+        // If there's already more than one listener, bail (avoids duplicate behavior)
+        // We can't reliably count listeners, so add a passive fallback that only
+        // toggles the modal if it's currently hidden.
+        btn.addEventListener('click', function fallbackOpen(e){
+            try {
+                if (!bookModal.classList.contains('d-none')) return; // modal already open
+                bookModal.classList.remove('d-none');
+                // ensure focus lands on the modal title for accessibility
+                const mt = document.getElementById('modalTitle'); if (mt) mt.focus && mt.focus();
+            } catch (err) { /* ignore */ }
+        });
+    } catch (e) { /* ignore */ }
+})();
+</script>
+
+<script>
+// Enhance description cells: clamp preview + show more/less. Works for static and dynamically injected rows.
+document.addEventListener('DOMContentLoaded', function () {
+    const tbody = document.getElementById('booksTableBody');
+    if (!tbody) return;
+
+    function enhanceRowDescriptions() {
+        [...tbody.querySelectorAll('tr')].forEach(tr => {
+            const cells = tr.querySelectorAll('td');
+            // description is the 11th column (index 10)
+            if (!cells || cells.length < 11) return;
+            const descCell = cells[10];
+            if (!descCell || descCell.dataset.enhanced) return;
+            const rawText = (descCell.textContent || '').trim();
+            if (!rawText) { descCell.dataset.enhanced = '1'; return; }
+            // create wrapper and button
+            const wrapper = document.createElement('div'); wrapper.className = 'desc-preview'; wrapper.textContent = rawText;
+            descCell.textContent = '';
+            descCell.appendChild(wrapper);
+            if (rawText.length > 180) {
+                const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'show-more-btn'; btn.textContent = 'Mostrar más';
+                btn.addEventListener('click', function () {
+                    if (wrapper.classList.contains('desc-preview')) {
+                        wrapper.classList.remove('desc-preview');
+                        btn.textContent = 'Mostrar menos';
+                    } else {
+                        wrapper.classList.add('desc-preview');
+                        btn.textContent = 'Mostrar más';
+                        // scroll cell into view if needed
+                        descCell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+                descCell.appendChild(btn);
+            }
+            descCell.dataset.enhanced = '1';
+        });
+    }
+
+    // Observe for dynamic changes (e.g., libros.js populating rows)
+    const obs = new MutationObserver((mutations) => {
+        enhanceRowDescriptions();
+    });
+    obs.observe(tbody, { childList: true, subtree: true });
+
+    // initial run in case there are static rows
+    enhanceRowDescriptions();
+});
+</script>
         </div>
     </div>
 
-    <script>
-        // Base de datos de libros
-        let books = [
-            { id: 1, title: 'Cien Años de Soledad', author: 'Gabriel García Márquez', isbn: '978-0307474728', genre: 'Fantasía', publisher: 'Sudamericana', year: 1967, pages: 417, copies: 5, description: 'Novela emblemática del realismo mágico.' },
-            { id: 2, title: 'El Principito', author: 'Antoine de Saint-Exupéry', isbn: '978-0156013987', genre: 'Fantasía', publisher: 'Reynal & Hitchcock', year: 1943, pages: 96, copies: 3, description: 'Fábula poética sobre la vida y la amistad.' },
-            { id: 3, title: '1984', author: 'George Orwell', isbn: '978-0451524935', genre: 'Ciencia Ficción', publisher: 'Secker & Warburg', year: 1949, pages: 328, copies: 2, description: 'Distopía sobre el control totalitario.' }
-        ];
-        let editingBookId = null;
-        let nextBookId = 4;
-
-        // Elementos del DOM
-        const btnAgregarLibro = document.getElementById('btnAgregarLibro');
-        const btnCerrarModal = document.getElementById('btnCerrarModal');
-        const btnCancelar = document.getElementById('btnCancelar');
-        const bookModal = document.getElementById('bookModal');
-        const bookForm = document.getElementById('bookForm');
-        const booksTableBody = document.getElementById('booksTableBody');
-        const searchInput = document.getElementById('searchInput');
-
-        // Renderizar tabla de libros
-        function renderBooks(filteredBooks = null) {
-            const data = filteredBooks || books;
-            booksTableBody.innerHTML = '';
-            data.forEach(book => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${String(book.id).padStart(3, '0')}</td>
-                    <td>${book.title}</td>
-                    <td>${book.author}</td>
-                    <td>${book.isbn || ''}</td>
-                    <td>${book.genre}</td>
-                    <td>${book.publisher || ''}</td>
-                    <td>${book.year || ''}</td>
-                    <td>${book.pages || ''}</td>
-                    <td>${book.copies}</td>
-                    <td>${book.description || ''}</td>
-                    <td>
-                        <button class="btn-icon btn-edit" data-id="${book.id}" title="Editar"><i data-lucide="edit-3"></i></button>
-                    </td>
-                `;
-                booksTableBody.appendChild(tr);
-            });
-
-            // Renderizar íconos Lucide después de actualizar la tabla
-            if (window.lucide && typeof lucide.createIcons === 'function') {
-                lucide.createIcons();
-            }
-
-            // Agregar eventos a los botones de la tabla
-            document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const bookId = parseInt(this.getAttribute('data-id'));
-                    editBook(bookId);
-                });
-            });
-        }
-
-        // Buscar libros
-        function filterBooks() {
-            const query = searchInput.value.trim().toLowerCase();
-            if (!query) {
-                renderBooks();
-                return;
-            }
-            const filtered = books.filter(book => {
-                return (
-                    book.title.toLowerCase().includes(query) ||
-                    book.author.toLowerCase().includes(query) ||
-                    (book.isbn && book.isbn.toLowerCase().includes(query)) ||
-                    book.genre.toLowerCase().includes(query) ||
-                    (book.publisher && book.publisher.toLowerCase().includes(query)) ||
-                    (book.year && String(book.year).includes(query)) ||
-                    (book.pages && String(book.pages).includes(query)) ||
-                    (book.copies && String(book.copies).includes(query)) ||
-                    (book.description && book.description.toLowerCase().includes(query))
-                );
-            });
-            renderBooks(filtered);
-        }
-
-        searchInput.addEventListener('input', filterBooks);
-
-        // Abrir modal para agregar libro
-        function openAddBookModal() {
-            editingBookId = null;
-            document.getElementById('modalTitle').textContent = 'Agregar Libro';
-            bookForm.reset();
-            document.getElementById('bookId').value = '';
-            bookModal.classList.remove('d-none');
-        }
-
-        // Cerrar modal
-        function closeBookModal() {
-            bookModal.classList.add('d-none');
-            bookForm.reset();
-            editingBookId = null;
-        }
-
-        // Editar libro
-        function editBook(bookId) {
-            const book = books.find(b => b.id === bookId);
-            if (!book) return;
-            editingBookId = bookId;
-            document.getElementById('modalTitle').textContent = 'Editar Libro';
-            document.getElementById('bookId').value = book.id;
-            document.getElementById('bookTitle').value = book.title;
-            document.getElementById('bookAuthor').value = book.author;
-            document.getElementById('bookISBN').value = book.isbn || '';
-            document.getElementById('bookGenre').value = book.genre;
-            document.getElementById('bookPublisher').value = book.publisher || '';
-            document.getElementById('bookYear').value = book.year || '';
-            document.getElementById('bookPages').value = book.pages || '';
-            document.getElementById('bookCopies').value = book.copies;
-            document.getElementById('bookDescription').value = book.description || '';
-            bookModal.classList.remove('d-none');
-        }
-
-        // Cambiar estado de libro
-
-        // Mostrar notificación
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `alert-custom alert-${type === 'success' ? 'success' : 'error'}`;
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.zIndex = '9999';
-            notification.style.minWidth = '300px';
-            notification.innerHTML = `
-                <span style="vertical-align:middle;">
-                    <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-triangle'}" class="me-2"></i>
-                </span>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(notification);
-            if (window.lucide && typeof lucide.createIcons === 'function') {
-                lucide.createIcons();
-            }
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Event Listeners
-        btnAgregarLibro.addEventListener('click', openAddBookModal);
-        btnCerrarModal.addEventListener('click', closeBookModal);
-        btnCancelar.addEventListener('click', closeBookModal);
-        bookModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeBookModal();
-            }
-        });
-
-        // Guardar libro
-        bookForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const title = document.getElementById('bookTitle').value.trim();
-            const author = document.getElementById('bookAuthor').value.trim();
-            const isbn = document.getElementById('bookISBN').value.trim();
-            const genre = document.getElementById('bookGenre').value;
-            const publisher = document.getElementById('bookPublisher').value.trim();
-            const year = document.getElementById('bookYear').value;
-            const pages = document.getElementById('bookPages').value;
-            const copies = document.getElementById('bookCopies').value;
-            const description = document.getElementById('bookDescription').value.trim();
-            if (!title || !author || !genre || !copies) {
-                showNotification('Por favor completa todos los campos obligatorios', 'error');
-                return;
-            }
-            if (editingBookId) {
-                // Editar libro existente
-                const bookIndex = books.findIndex(b => b.id === editingBookId);
-                if (bookIndex !== -1) {
-                    books[bookIndex].title = title;
-                    books[bookIndex].author = author;
-                    books[bookIndex].isbn = isbn;
-                    books[bookIndex].genre = genre;
-                    books[bookIndex].publisher = publisher;
-                    books[bookIndex].year = year ? parseInt(year) : '';
-                    books[bookIndex].pages = pages ? parseInt(pages) : '';
-                    books[bookIndex].copies = copies ? parseInt(copies) : 1;
-                    books[bookIndex].description = description;
-                    showNotification('Libro actualizado correctamente', 'success');
-                }
-            } else {
-                // Agregar nuevo libro
-                const newBook = {
-                    id: nextBookId++,
-                    title,
-                    author,
-                    isbn,
-                    genre,
-                    publisher,
-                    year: year ? parseInt(year) : '',
-                    pages: pages ? parseInt(pages) : '',
-                    copies: copies ? parseInt(copies) : 1,
-                    description
-                };
-                books.push(newBook);
-                showNotification('Libro agregado correctamente', 'success');
-            }
-            renderBooks();
-            setTimeout(() => closeBookModal(), 500);
-        });
-
-        // Inicializar
-        renderBooks();
-    </script>
+    <script type="module" src="{{ url_for('static', filename='js/apiClient.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/libros.js') }}"></script>
 </main>
+<!-- Confirmation modal (reusable) -->
+<div class="modal-overlay d-none" id="confirmModal">
+    <div class="modal-custom" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+        <div class="modal-header-custom d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center"><i data-lucide="trash-2" class="me-2 text-danger"></i><h3 id="confirmModalTitle" class="modal-title mb-0">Confirmar acción</h3></div>
+            <button class="btn-close-modal" id="confirmModalClose">✕</button>
+        </div>
+        <div class="modal-body-custom">
+            <p id="confirmModalMessage">¿Confirmar?</p>
+        </div>
+        <div class="modal-footer-custom d-flex justify-content-end gap-2">
+            <button type="button" class="btn-secondary-custom" id="confirmCancelBtn">Cancelar</button>
+            <button type="button" class="btn-primary-custom" id="confirmOkBtn">Confirmar</button>
+        </div>
+    </div>
+</div>
+<style>
+/* Compact, attractive confirm modal */
+#confirmModal .modal-custom{max-width:430px;padding:0.6rem;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+#confirmModal .modal-custom{transform:scale(.96);opacity:0;transition:transform .18s ease, opacity .18s ease}
+#confirmModal:not(.d-none) .modal-custom{transform:scale(1);opacity:1}
+#confirmModal .modal-header-custom{padding:0.6rem 0.8rem;border-bottom:1px solid #eef2f6}
+#confirmModal .modal-body-custom{padding:0.8rem 0.9rem;font-size:0.95rem;color:#222}
+#confirmModal .modal-footer-custom{padding:0.6rem 0.9rem}
+#confirmModal .modal-title{font-size:1rem;margin:0}
+#confirmModal .btn-primary-custom{background:var(--clr-celadon);border:0;padding:0.45rem 0.9rem;border-radius:6px;color:var(--clr-gunmetal)}
+#confirmModal .btn-secondary-custom{background:var(--clr-ghost-white);border:0;padding:0.45rem 0.9rem;border-radius:6px;color:var(--clr-gunmetal)}
+#confirmModal .btn-close-modal{background:transparent;border:0;font-size:1rem}
+@media (max-width:480px){ #confirmModal .modal-custom{width:92vw;max-width:92vw}}
+</style>
 {% endblock %}

@@ -101,20 +101,45 @@ function initBookForm() {
   if (!form) return;
   var alertMessage = document.getElementById('alertMessage');
   form.addEventListener('submit', function(e) {
+    // If a specialized module (libros.js) is handling the book form, avoid
+    // showing duplicate alerts — let that module manage notifications.
+    if (window && window.LIBROS_MODULE) return;
     e.preventDefault();
     var title = document.getElementById('bookTitle').value.trim();
     var author = document.getElementById('bookAuthor').value.trim();
-    var genre = document.getElementById('bookGenre').value;
+    // genre may be a native select or our custom picker (#bookGenreInput)
+    var genreEl = document.getElementById('bookGenre');
+    var genreInput = document.getElementById('bookGenreInput');
+    var genre = '';
+    if (genreEl && typeof genreEl.value !== 'undefined') genre = genreEl.value;
+    else if (genreInput && genreInput.dataset && genreInput.dataset.value) genre = genreInput.dataset.value;
     var copies = document.getElementById('bookCopies').value;
     if (!title || !author || !genre || !copies) {
-      showAlert('Te faltó llenar algunos campos', 'error');
+      // Prefer inline alertMessage if present, otherwise create a flash
+      if (alertMessage) {
+        showAlert('Te faltó llenar algunos campos', 'error');
+      } else {
+        var container = document.getElementById('flashContainer') || document.body;
+        var f = document.createElement('div');
+        f.className = 'flash alert-error';
+        f.innerHTML = '<div class="flash-body">Te faltó llenar algunos campos</div><button type="button" class="flash-close btn-close">&times;</button>';
+        container.appendChild(f);
+        setTimeout(function() { f.classList.add('hide'); setTimeout(function(){ try{ f.remove(); } catch(e){} }, 400); }, 3500);
+      }
       return;
     }
-    showAlert('¡Listo! Libro agregado', 'success');
-    setTimeout(function() {
-      form.reset();
-      hideAlert();
-    }, 2000);
+    if (alertMessage) {
+      showAlert('¡Listo! Libro agregado', 'success');
+      setTimeout(function() { form.reset(); hideAlert(); }, 2000);
+    } else {
+      var container2 = document.getElementById('flashContainer') || document.body;
+      var f2 = document.createElement('div');
+      f2.className = 'flash alert-success';
+      f2.innerHTML = '<div class="flash-body">¡Listo! Libro agregado</div><button type="button" class="flash-close btn-close">&times;</button>';
+      container2.appendChild(f2);
+      setTimeout(function() { f2.classList.add('hide'); setTimeout(function(){ try{ f2.remove(); } catch(e){} }, 400); }, 2000);
+      setTimeout(function() { form.reset(); }, 2000);
+    }
   });
   function showAlert(message, type) {
     alertMessage.textContent = message;
@@ -147,11 +172,77 @@ function initAppScripts() {
   initLoginForm();
   initBookForm();
   initPrestamoForm();
+  initModalUiBehavior();
   initFlashMessages();
   // Agrega aquí más inicializadores si creas nuevos módulos
 }
 
 document.addEventListener('DOMContentLoaded', initAppScripts);
+
+// Automatically adjust navbar/footer and z-index when custom modals open.
+function initModalUiBehavior() {
+  var modals = document.querySelectorAll('.modal-overlay');
+  if (!modals || !modals.length) return;
+
+  function toggleModalUi(show) {
+    var html = document.documentElement;
+    var navbar = document.querySelector('.navbar');
+    var footer = document.querySelector('footer, .footer');
+    if (show) {
+      html.classList.add('modal-active');
+      // prevent background scrolling when modal is open
+      document.body.classList.add('no-scroll');
+      if (navbar) navbar.setAttribute('aria-hidden', 'true');
+      if (footer) footer.setAttribute('aria-hidden', 'true');
+    } else {
+      html.classList.remove('modal-active');
+      document.body.classList.remove('no-scroll');
+      if (navbar) navbar.removeAttribute('aria-hidden');
+      if (footer) footer.removeAttribute('aria-hidden');
+    }
+  }
+
+  // Observe class changes (we rely on adding/removing 'd-none' to show/hide modals)
+  modals.forEach(function(modal) {
+    var mo = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.attributeName === 'class') {
+          var isShown = !modal.classList.contains('d-none');
+          toggleModalUi(isShown);
+        }
+      });
+    });
+    mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+    // Clicking the overlay area should hide the modal and restore UI if other code expects it
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.add('d-none');
+        toggleModalUi(false);
+      }
+    });
+
+    // Wire up internal close buttons if present. Also support module-specific ids
+    // like #mBtnCancelar used in the préstamos modal. When a close control is
+    // clicked we must hide the modal element (add d-none) and restore UI state.
+    var closeBtn = modal.querySelector('.btn-close-modal, .btn-close, #btnCerrarModal, #btnCancelar, #mBtnCancelar, #btnCerrarPrestamoModal');
+    if (closeBtn) closeBtn.addEventListener('click', function() {
+      try { modal.classList.add('d-none'); } catch (e) {}
+      toggleModalUi(false);
+    });
+  });
+
+  // Also close visible modals with Escape and restore UI
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+      var visible = Array.prototype.slice.call(document.querySelectorAll('.modal-overlay')).find(function(m) { return !m.classList.contains('d-none'); });
+      if (visible) {
+        visible.classList.add('d-none');
+        toggleModalUi(false);
+      }
+    }
+  });
+}
 
 // Manejo de mensajes flash renderizados por Jinja en la plantilla base
 function initFlashMessages() {

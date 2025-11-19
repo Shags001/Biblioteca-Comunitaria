@@ -28,9 +28,27 @@ py -m venv .venv
 Crear archivo requirements.txt
 
 Flask==3.0.3
-FlaskSQLA1chemy==3.1.1
+Flask-SQLAlchemy==3.0.1
 Flask-Migrate==4.0.7
 python-dotenv==1.0.1
+PyMySQL==1.0.3
+requests==2.31.0
 
 - Instalar dependencias 
- pip install -r requirements.txt
+ python -m pip install -r .\requirements.txt
+
+ # Hacer un Wipeo de datos.
+$env:POPULATE_WIPE_TOKEN='(.env variable)'
+py run.py
+
+ # Llenado de Datos.
+$env:POPULATE_MODE='create'
+python .\scripts\populate_api.py
+
+ # valor del .env. 
+
+DATABASE_URL=mssql+pyodbc:///?odbc_connect=DRIVER%3D%7BODBC%20Driver%2017%20for%20SQL%20Server%7D%3BSERVER%3Dlocalhost%3BDATABASE%3DBibliotecaComunitaria%3BTrusted_Connection%3Dyes%3B
+API_BASE_URL=http://127.0.0.1:5000
+POPULATE_MODE=create
+POPULATE_WIPE=true
+POPULATE_WIPE_TOKEN=(token_seguro)
