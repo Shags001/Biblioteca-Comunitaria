@@ -1,0 +1,119 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Logging{% endblock %}
+
+{% block content %}
+<main class="container mt-4">
+    <div class="login-container">
+        <h2 class="login-title">¡Hola! Bienvenido de vuelta</h2>
+        <p class="login-subtitle">Ingresa tus datos para continuar</p>
+
+
+        <div class="alert-custom alert-error d-none" id="errorMessage">
+            Te faltó llenar algunos campos
+        </div>
+
+        <form id="loginForm" method="POST" action="{{ url_for('main.login') }}">
+            <div class="mb-3">
+                <label for="email" class="form-label"><i data-lucide="user" class="me-2"></i>Usuario o correo</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i data-lucide="mail"></i></span>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="email" 
+                        name="email"
+                        placeholder="ejemplo@correo.com"
+                        required
+                    >
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label"><i data-lucide="lock" class="me-2"></i>Contraseña</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i data-lucide="key"></i></span>
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        id="password" 
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+            </div>
+            <button type="submit" class="btn-primary-custom d-flex align-items-center justify-content-center">
+                <i data-lucide="log-in" class="me-2"></i>Iniciar sesión
+            </button>
+        </form>
+
+    <!-- <script>
+        const form = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            errorMessage.classList.add('d-none');
+            successMessage.classList.add('d-none');
+            emailInput.classList.remove('is-invalid');
+            passwordInput.classList.remove('is-invalid');
+
+            let hasError = false;
+
+            if (!email) {
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            }
+
+            if (!password) {
+                passwordInput.classList.add('is-invalid');
+                hasError = true;
+            }
+
+            if (hasError) {
+                errorMessage.classList.remove('d-none');
+                
+                setTimeout(() => {
+                    errorMessage.classList.add('d-none');
+                }, 4000);
+            } else {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    emailInput.classList.add('is-invalid');
+                    errorMessage.textContent = 'El correo no es válido';
+                    errorMessage.classList.remove('d-none');
+                    
+                    setTimeout(() => {
+                        errorMessage.classList.add('d-none');
+                        errorMessage.textContent = 'Te faltó llenar algunos campos';
+                    }, 4000);
+                    return;
+                }
+
+                successMessage.classList.remove('d-none');
+                
+                setTimeout(() => {
+                    console.log('Login exitoso');
+                }, 2000);
+            }
+        });
+
+        emailInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+
+        passwordInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    </script> -->
+
+</main>
+{% endblock %}

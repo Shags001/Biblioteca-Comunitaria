@@ -1,0 +1,483 @@
+/* ==========================================
+   VARIABLES DE COLORES - Paleta Biblioteca
+   ========================================== */
+:root {
+    /* Colores Principales */
+    --white-smoke: #F3F3F3;
+    --celadon: #AAD4AE;
+    --cambridge-blue: #98C39C;
+    --ghost-white: #FAFAFF;
+    --gunmetal: #2E3440;
+    
+    /* Colores Secundarios */
+    --cadet-gray: #7A9EAD;
+    --powder-blue: #9BBAC7;
+    --white: #FFFFFF;
+    
+    /* Colores de Acento */
+    --ghost-white-light: #F8F8FD;
+    --celadon-light: #9FD6B2;
+    --ecru: #E5C07B;
+    --tea-rose: #D4AAAA;
+    
+    /* Colores de Estado */
+    --disponible: #AAD4AE;
+    --en-prestamo: #F2C57C;
+    --devuelto: #83B8D7;
+    --vencido: #D4AAAA;
+}
+
+/* ==========================================
+   RESET Y ESTILOS GENERALES
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--white-smoke);
+    color: var(--gunmetal);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-custom {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 30px;
+    flex: 1;
+}
+
+
+/* ==========================================
+   TIPOGRAFÍA
+   ========================================== */
+.titulo-principal {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gunmetal);
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.subtitulo-seccion {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gunmetal);
+    margin-bottom: 25px;
+}
+
+/* ==========================================
+   SECCIONES Y TARJETAS
+   ========================================== */
+.seccion-card {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.seccion-filtros {
+    background-color: #F5F5F5;
+}
+
+/* ==========================================
+   FORMULARIOS HORIZONTALES
+   ========================================== */
+.form-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-row-doble {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group-mitad {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-label-inline {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--gunmetal);
+    text-align: left;
+    margin: 0;
+}
+
+.form-control-inline {
+    width: 100%;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    background-color: var(--white);
+    transition: border-color 0.3s ease;
+}
+
+.form-control-inline:focus {
+    border-color: var(--celadon);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(170, 212, 174, 0.15);
+}
+
+.form-control-inline:read-only {
+    background-color: #F9FAFB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.form-control-inline::placeholder {
+    color: #9CA3AF;
+}
+
+/* Input con icono */
+.input-con-icono {
+    position: relative;
+    width: 100%;
+}
+
+.input-con-icono .form-control-inline {
+    padding-right: 35px;
+}
+
+.icono-buscar {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.btn-principal {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: var(--celadon);
+    color: var(--gunmetal);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-principal:hover {
+    background-color: var(--cambridge-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(170, 212, 174, 0.3);
+}
+
+.btn-secundario {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    background-color: var(--cadet-gray);
+    color: var(--white);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secundario:hover {
+    background-color: var(--powder-blue);
+    transform: translateY(-1px);
+}
+
+/* ==========================================
+   FILTROS
+   ========================================== */
+.filtros-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-item .form-label-inline {
+    text-align: left;
+}
+
+/* ==========================================
+   HISTORIAL DE DEVOLUCIONES
+   ========================================== */
+.registro-historial {
+    background-color: #FAFAFA;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.registro-historial:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.registro-historial:last-child {
+    margin-bottom: 0;
+}
+
+.registro-header-historial {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.registro-titulo-historial {
+    font-family: 'Merriweather', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gunmetal);
+    margin: 0;
+}
+
+.registro-info-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: #6B7280;
+    margin: 0 0 12px 0;
+}
+
+.registro-footer-historial {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.etiquetas-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.etiqueta-info {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    background-color: #E5E7EB;
+    color: #4B5563;
+    padding: 3px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ==========================================
+   BADGES
+   ========================================== */
+.badge-estado {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.badge-devuelto {
+    background-color: rgba(131, 184, 215, 0.25);
+    color: #2D5A73;
+}
+
+.badge-tiempo {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.badge-verde {
+    background-color: rgba(170, 212, 174, 0.35);
+    color: #4A7C4F;
+}
+
+.badge-amarillo {
+    background-color: rgba(242, 197, 124, 0.35);
+    color: #8B6D3A;
+}
+
+.badge-rojo {
+    background-color: rgba(212, 170, 170, 0.35);
+    color: #8B5A5A;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+.footer-personalizado {
+    background-color: var(--celadon);
+    padding: 18px 0;
+    margin-top: 50px;
+}
+
+.footer-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: var(--gunmetal);
+    text-align: center;
+    margin: 0;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+@media (max-width: 768px) {
+    .container-custom,
+    .navbar-content {
+        padding: 0 20px;
+    }
+
+    .titulo-principal {
+        font-size: 24px;
+        margin-bottom: 30px;
+    }
+
+    .subtitulo-seccion {
+        font-size: 16px;
+    }
+
+    .seccion-card {
+        padding: 20px;
+    }
+
+    .form-row,
+    .form-group-mitad {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .form-row-doble {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .form-label-inline {
+        font-size: 12px;
+    }
+
+    .filtros-container {
+        grid-template-columns: 1fr;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .btn-principal,
+    .btn-secundario {
+        width: 100%;
+    }
+
+    .registro-footer-historial {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .nav-links {
+        gap: 15px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-content {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .registro-historial {
+        padding: 15px;
+    }
+
+    .etiquetas-container {
+        flex-wrap: wrap;
+    }
+}
+
+/* ==========================================
+   ANIMACIONES
+   ========================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.registro-historial {
+    animation: fadeIn 0.3s ease;
+}
+
+/* ==========================================
+   UTILIDADES
+   ========================================== */
+select.form-control-inline {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+}
