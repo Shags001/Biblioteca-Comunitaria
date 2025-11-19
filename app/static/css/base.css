@@ -896,6 +896,39 @@ footer, .footer {
     margin-top: 25px;
 }
 
+/* Ensure modal footer buttons have the same visual size while keeping their color styles */
+.modal-footer-custom .btn-primary-custom,
+.modal-footer-custom .btn-secondary-custom,
+.modal-footer-custom .btn {
+    min-width: 140px;       /* consistent minimum width */
+    height: 44px;           /* consistent height */
+    padding: 10px 16px;     /* balanced padding for icon + text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;               /* space between icon and text */
+    font-size: 15px;
+    border-radius: 8px;
+    margin-top: 0;          /* remove inherited top margin so buttons align */
+    align-self: center;     /* ensure centered in footer row */
+    line-height: 1;         /* consistent text baseline */
+}
+
+/* On small viewports, make modal footer buttons full-width and stack vertically */
+@media (max-width: 576px) {
+    .modal-footer-custom {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    .modal-footer-custom .btn-primary-custom,
+    .modal-footer-custom .btn-secondary-custom,
+    .modal-footer-custom .btn {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
 /* ===== RESPONSIVE (TABLETS) ===== */
 @media (max-width: 768px) {
     .login-container {
@@ -1338,7 +1371,8 @@ textarea.form-control {
 }
 
 .prestamo-module .contenedor-formulario-row .form-card {
-    flex: 0 0 68%;
+    /* allow shrinking so the explanation card can sit to the right without wrapping */
+    flex: 1 1 68%;
     min-width: 300px;
 }
 
@@ -1410,6 +1444,31 @@ textarea.form-control {
   .prestamo-module .contenedor-formulario-row .explicacion-wrapper { flex: 0 0 100%; min-width: auto; }
 }
 
+/* Fix: keep the explanation wrapper a capped column on wide viewports so it
+     sits to the right of the form instead of wrapping under it. */
+.prestamo-module .contenedor-formulario-row .explicacion-wrapper {
+        flex: 0 0 380px;
+        max-width: 380px;
+}
+
+/* Ensure side-by-side layout on large viewports by preventing wrap and
+     giving the form the remaining space. This avoids the explanation card
+     dropping to a new row while keeping responsive stacking under 992px. */
+@media (min-width: 992px) {
+    .prestamo-module .contenedor-formulario-row {
+        flex-wrap: nowrap;
+    }
+    .prestamo-module .contenedor-formulario-row .form-card {
+        /* take remaining space after the explanation column */
+        flex: 1 1 calc(100% - 400px);
+        min-width: 360px;
+    }
+    .prestamo-module .contenedor-formulario-row .explicacion-wrapper {
+        flex: 0 0 380px;
+        max-width: 380px;
+    }
+}
+
 @media (max-width: 768px) {
     .prestamo-module .form-control,
     .prestamo-module .form-select { font-size: 0.9rem; padding: 0.5rem; }
@@ -1478,6 +1537,39 @@ textarea.form-control {
         border-radius: 0 !important;
         padding: 0.5rem !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    }
+}
+
+/* Mobile: keep navbar and footer partially visible when modal opens */
+@media (max-width: 768px) {
+    /* Use CSS variables for navbar/footer heights so values are easy to adjust */
+    :root {
+        --navbar-height: 72px; /* adjust to your navbar actual height */
+        --footer-height: 72px; /* reserve bottom space for footer visibility */
+    }
+
+    /* Center modal vertically and horizontally on small screens. Hiding navbar/footer
+       is handled by JS (.modal-active) so we can place the modal in the middle of the
+       viewport and still keep a sensible max-height for internal scrolling. */
+    .modal-overlay {
+        align-items: center; /* center modal vertically */
+        padding-top: 8px;    /* small breathing room on very small screens */
+        padding-bottom: 8px;
+        z-index: 2050;       /* keep on top of most page chrome */
+        background: rgba(0,0,0,0.32);
+    }
+
+    .modal-custom {
+        margin: auto; /* fully centered */
+        max-height: calc(100vh - var(--footer-height) - 32px); /* leave space for possible footer/tooling */
+        overflow-y: auto;
+        border-radius: 10px;
+        width: 96vw;
+    }
+
+    /* Ensure modal footer is visible and not cut off */
+    .modal-custom .modal-body-custom {
+        padding-bottom: 8px;
     }
 }
 
@@ -1558,3 +1650,47 @@ textarea.form-control {
     .flash-container { right: 12px; bottom: 12px; }
     .flash { min-width: 200px; max-width: 320px; }
 }
+
+/* When a custom modal is active we prefer the modal to be the main focus.
+   On mobile we hide navbar/footer entirely (space is tight). On desktop we dim
+   the navbar/footer so they remain visible but de-emphasized. JS toggles the
+   `modal-active` class on the root element when a modal-overlay is shown. */
+
+/* Desktop / default: dim navbar/footer when modal is active (do not hide). */
+.modal-active .navbar,
+.modal-active footer,
+.modal-active .footer {
+    /* Do not change navbar colors with filters — the overlay darkens the whole page
+       including the navbar. Keep navbar visible but non-interactive while modal is open. */
+    transition: opacity 180ms ease;
+    pointer-events: none; /* prevent accidental clicks while modal is open */
+}
+
+/* Mobile: hide navbar/footer completely to maximize space for modal. */
+@media (max-width: 768px) {
+    .modal-active .navbar,
+    .modal-active footer,
+    .modal-active .footer {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}
+
+/* Ensure modal overlay and modal content are on top of the normal navbar z-index. */
+.modal-overlay:not(.d-none) {
+    /* modal overlay needs to sit above the navbar so the dim effect is visible */
+    z-index: 9999 !important;
+}
+.modal-active .modal-overlay,
+.modal-active .modal-custom {
+    z-index: 10000 !important;
+}
+
+/* Fallback: if code shows a modal without toggling modal-active, still prefer modal on top.
+   This is defensive and keeps behavior stable across different modal implementations. */
+.modal-overlay:not(.d-none) .modal-custom {
+    z-index: 2051 !important;
+}
+
+
